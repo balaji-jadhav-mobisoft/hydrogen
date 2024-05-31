@@ -13,6 +13,7 @@ import {
  * @param {LayoutProps}
  */
 export function Layout({cart, children = null, footer, header, isLoggedIn}) {
+  console.log(header, 'header');
   return (
     <>
       <CartAside cart={cart} />
@@ -91,7 +92,7 @@ function MobileMenuAside({menu, shop}) {
   return (
     menu &&
     shop?.primaryDomain?.url && (
-      <Aside id="mobile-menu-aside" heading="MENU">
+      <Aside id="mobile-menu-aside">
         <HeaderMenu
           menu={menu}
           viewport="mobile"

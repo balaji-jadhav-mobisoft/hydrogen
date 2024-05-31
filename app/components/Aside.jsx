@@ -13,7 +13,16 @@
  *   id?: string;
  * }}
  */
+
+import {NavLink} from '@remix-run/react';
+import CloseIcon from '~/assets/close_icon.svg';
 export function Aside({children, heading, id = 'aside'}) {
+  function closeAside(event) {
+    if (typeof window !== 'undefined' && viewport === 'mobile') {
+      event.preventDefault();
+      window.location.href = event.currentTarget.href;
+    }
+  }
   return (
     <div aria-modal className="overlay" id={id} role="dialog">
       <button
@@ -29,6 +38,16 @@ export function Aside({children, heading, id = 'aside'}) {
           <CloseAside />
         </header>
         <main>{children}</main>
+        <main>
+          <NavLink
+            className="header-menu-item nav-links login-side-menu"
+            onClick={closeAside}
+            prefetch="intent"
+            to="/"
+          >
+            LOGIN
+          </NavLink>
+        </main>
       </aside>
     </div>
   );
@@ -38,7 +57,7 @@ function CloseAside() {
   return (
     /* eslint-disable-next-line jsx-a11y/anchor-is-valid */
     <a className="close" href="#" onChange={() => history.go(-1)}>
-      &times;
+      <img src={CloseIcon} height={16} width={16} alt="" />
     </a>
   );
 }

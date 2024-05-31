@@ -16,15 +16,15 @@ h1 {
   font-size: 1.6rem;
   font-weight: 700;
   line-height: 1.4;
-  margin-bottom: 2rem;
-  margin-top: 2rem;
+  /* margin-bottom: 2rem;
+  margin-top: 2rem; */
 }
 
 h2 {
   font-size: 1.2rem;
   font-weight: 700;
   line-height: 1.4;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 }
 
 h4 {
@@ -69,7 +69,7 @@ body {
 }
 
 body > main {
-  margin: 0 1rem 1rem 1rem;
+  margin: 0 0rem 1rem 0rem;
 }
 
 section {

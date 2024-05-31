@@ -1,11 +1,15 @@
 :root {
+  --aside-menu-width: 300px;
   --aside-width: 400px;
   --cart-aside-summary-height-with-discount: 300px;
   --cart-aside-summary-height: 250px;
   --grid-item-width: 355px;
   --header-height: 64px;
+  --aside-header-height: 50px;
   --color-dark: #000;
   --color-light: #fff;
+  --typeBaseSize: 17px;
+  --colorBtnPrimary: #607556;
 }
 
 img {
@@ -21,19 +25,20 @@ aside {
   background: var(--color-light);
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
   height: 100vh;
-  max-width: var(--aside-width);
-  min-width: var(--aside-width);
+  max-width: var(--aside-menu-width);
+  min-width: var(--aside-menu-width);
   position: fixed;
   right: calc(-1 * var(--aside-width));
   top: 0;
-  transition: transform 200ms ease-in-out;
+  /* transition: transform 200ms ease-in-out; */
+  transition: transform 0.25s cubic-bezier(0.43, 0.01, 0.44, 1);
 }
 
 aside header {
   align-items: center;
-  border-bottom: 1px solid var(--color-dark);
+  /* border-bottom: 1px solid var(--color-dark); */
   display: flex;
-  height: var(--header-height);
+  height: var(--aside-header-height);
   justify-content: space-between;
   padding: 0 20px;
 }
@@ -60,9 +65,11 @@ aside header h2 {
 }
 
 aside main {
-  margin: 1rem;
+  margin: 0rem 1.6rem 1rem 2rem;
 }
-
+.login-side-menu {
+  font-weight: 600;
+}
 aside p {
   margin: 0 0 0.25rem;
 }
@@ -131,11 +138,15 @@ aside li {
   align-items: center;
   background: #fff;
   display: flex;
-  height: var(--header-height);
+  justify-content: space-between;
+  /* height: var(--header-height); */
   padding: 0 1rem;
   position: sticky;
   top: 0;
   z-index: 1;
+  @media (max-width: 48em) {
+    padding: 0rem;
+  }
 }
 
 .header-menu-mobile-toggle {
@@ -162,12 +173,24 @@ aside li {
 
 .header-menu-item {
   cursor: pointer;
+  text-transform: uppercase;
+  color: #4a4a4a;
+  letter-spacing: 1.2px;
+
+  @media (max-width: 45em) {
+    padding: 5px 0px;
+    color: #607556 !important;
+  }
+}
+.header-menu-item:hover {
+  color: #8ea16f !important;
 }
 
 .header-ctas {
   align-items: center;
   display: flex;
-  grid-gap: 1rem;
+  grid-gap: 1.6rem;
+  justify-content: flex-end;
   margin-left: auto;
 }
 
@@ -299,8 +322,6 @@ aside li {
   gap: 1rem;
 }
 
-
-
 /*
 * --------------------------------------------------
 * routes/__index
@@ -308,15 +329,22 @@ aside li {
 */
 .featured-collection {
   display: block;
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
   position: relative;
 }
 
 .featured-collection-image {
-  aspect-ratio: 1 / 1;
-  @media (min-width: 45em) {
-    aspect-ratio: 16 / 9;
+  margin-top: -50px;
+  position: relative;
+
+  @media (max-width: 48em) {
+    margin-top: 0px;
   }
+  /* aspect-ratio: 1 / 1; */
+  /* height: 20vh; */
+  /* @media (min-width: 45em) {
+    aspect-ratio: 16 / 9;
+  } */
 }
 
 .featured-collection img {
@@ -447,6 +475,61 @@ aside li {
   height: 100%;
 }
 
+.back-in-stock-desktop {
+  @media (max-width: 48em) {
+    display: none;
+  }
+}
+
+.back-in-stock-mobile {
+  @media (min-width: 48em) {
+    display: none;
+  }
+}
+.back-in-stock-collection-mobile > div {
+  font-weight: 500;
+}
+.back-in-stock-collection-mobile {
+  padding: 2rem 2rem 1rem 2rem;
+}
+.back-in-stock-collection-mobile > h2 {
+  font-size: calc(var(--typeBaseSize) * 0.85);
+  font-family: Source Sans Pro, sans-serif;
+  letter-spacing: 0.2em;
+}
+.back-in-stock-collection-mobile > h1 {
+  font-family: Lora;
+  margin: 0px 0px 5px;
+  font-size: 2.4rem;
+  font-weight: 400;
+}
+
+.back-in-stock-collection-button {
+  position: relative;
+  background-color: var(--colorBtnPrimary);
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 0rem 2rem 2rem 2rem;
+  cursor: pointer;
+  /* transition: background-color 0.3s; */
+  /* transition: transform 0.5s; */
+  @media (max-width: 48em) {
+    padding: 10px 20px;
+  }
+}
+
+.back-in-stock-collection-button:hover {
+  padding-right: 70px;
+  background-position: 98% 50%;
+  background-image: url('../assets/button-arrow.png');
+  background-size: 30px;
+  background-repeat: no-repeat;
+}
+
 /*
 * --------------------------------------------------
 * routes/blog.$articlehandle.tsx
@@ -465,4 +548,10 @@ aside li {
 
 .account-logout {
   display: inline-block;
+}
+
+@media (max-width: 992px) {
+  .featured-collection-image img {
+    height: 60vw;
+  }
 }

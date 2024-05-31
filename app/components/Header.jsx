@@ -1,24 +1,58 @@
 import {Await, NavLink} from '@remix-run/react';
 import {Suspense} from 'react';
 import {useRootLoaderData} from '~/lib/root-data';
-
+import './header.css';
+import HeaderIcon from '~/assets/go-green.jpg';
+import CartIcon from '~/assets/briefcase-blank (1).svg';
+import SearchIcon from '~/assets/search.svg';
+import UserIcon from '~/assets/user-icon.svg';
+import DownArrow from '~/assets/down.svg';
+import MenuIcon from '~/assets/menu_icon.svg';
 /**
  * @param {HeaderProps}
  */
 export function Header({header, isLoggedIn, cart}) {
   const {shop, menu} = header;
   return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <HeaderMenu
-        menu={menu}
-        viewport="desktop"
-        primaryDomainUrl={header.shop.primaryDomain.url}
-      />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
-    </header>
+    <>
+      <div className="top-header" style={{backgroundColor: '#607556'}}>
+        <TopHeader />
+      </div>
+      <header
+        className="header header-section"
+        style={{borderBottom: '1px solid', borderBottomColor: '#d4d4d4'}}
+      >
+        <div className="header-top-sec">
+          <div className="header-icon-section">
+            <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
+              {/* <strong>{shop.name}</strong> */}
+              <div style={{maxWidth: '230px'}}>
+                <img
+                  style={{height: 'auto', width: '100%'}}
+                  src={HeaderIcon}
+                  alt="sss"
+                />
+              </div>
+            </NavLink>
+          </div>
+          <div className="header-icon-section" style={{width: '80%'}}>
+            <HeaderMenu
+              menu={menu}
+              viewport="desktop"
+              primaryDomainUrl={header.shop.primaryDomain.url}
+            />
+          </div>
+          <div
+            style={{
+              alignContent: 'center',
+              width: '20%',
+            }}
+          >
+            <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+          </div>
+        </div>
+      </header>
+    </>
   );
 }
 
@@ -29,16 +63,76 @@ export function Header({header, isLoggedIn, cart}) {
  *   viewport: Viewport;
  * }}
  */
+
+export function TopHeader() {
+  return (
+    <>
+      <div className="announcement">
+        <a href="" className="announcement__link">
+          <span className="announcement__text">
+            Earn 10% cashback on ALL orders as a Barnraiser!
+          </span>
+        </a>
+      </div>
+    </>
+  );
+}
+
 export function HeaderMenu({menu, primaryDomainUrl, viewport}) {
   const {publicStoreDomain} = useRootLoaderData();
   const className = `header-menu-${viewport}`;
 
   function closeAside(event) {
-    if (viewport === 'mobile') {
+    if (typeof window !== 'undefined' && viewport === 'mobile') {
       event.preventDefault();
       window.location.href = event.currentTarget.href;
     }
   }
+
+  const renderMenuItems = (items) => {
+    return items.map((item) => {
+      if (!item.url) return null;
+
+      const url =
+        item.url.includes('myshopify.com') ||
+        item.url.includes(publicStoreDomain) ||
+        item.url.includes(primaryDomainUrl)
+          ? new URL(item.url).pathname
+          : item.url;
+
+      return (
+        <div className="menu-item" key={item.id}>
+          <NavLink
+            // className="header-menu-item nav-links"
+            className={`header-menu-item nav-links ${
+              item.items && item.items.length > 0 ? 'has-sub-items' : ''
+            }`}
+            end
+            onClick={closeAside}
+            prefetch="intent"
+            style={activeLinkStyle}
+            to={url}
+          >
+            <span>{item.title}</span>
+            {item.items && item.items.length > 0 && (
+              <span className="dropdown-arrow">
+                <img
+                  style={{marginBottom: '-5px', marginLeft: '7px'}}
+                  src={DownArrow}
+                  height={20}
+                  width={20}
+                  alt=""
+                />
+              </span>
+            )}
+          </NavLink>
+          {item.items && item.items.length > 0 && (
+            <div className="dropdown">{renderMenuItems(item.items)}</div>
+          )}
+        </div>
+      );
+    });
+  };
 
   return (
     <nav className={className} role="navigation">
@@ -49,34 +143,9 @@ export function HeaderMenu({menu, primaryDomainUrl, viewport}) {
           prefetch="intent"
           style={activeLinkStyle}
           to="/"
-        >
-          Home
-        </NavLink>
+        ></NavLink>
       )}
-      {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
-        if (!item.url) return null;
-
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        return (
-          <NavLink
-            className="header-menu-item"
-            end
-            key={item.id}
-            onClick={closeAside}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
+      {renderMenuItems(menu.items || FALLBACK_HEADER_MENU.items)}
     </nav>
   );
 }
@@ -88,10 +157,21 @@ function HeaderCtas({isLoggedIn, cart}) {
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
+      <NavLink
+        className="account-sign-in-section"
+        prefetch="intent"
+        to="/account"
+        style={activeLinkStyle}
+      >
         <Suspense fallback="Sign in">
           <Await resolve={isLoggedIn} errorElement="Sign in">
-            {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
+            {(isLoggedIn) =>
+              isLoggedIn ? (
+                <img src={UserIcon} height={22} width={22} />
+              ) : (
+                <img src={UserIcon} height={22} width={22} />
+              )
+            }
           </Await>
         </Suspense>
       </NavLink>
@@ -104,20 +184,29 @@ function HeaderCtas({isLoggedIn, cart}) {
 function HeaderMenuMobileToggle() {
   return (
     <a className="header-menu-mobile-toggle" href="#mobile-menu-aside">
-      <h3>☰</h3>
+      <img src={MenuIcon} height={20} width={20} alt="" />
     </a>
   );
 }
 
 function SearchToggle() {
-  return <a href="#search-aside">Search</a>;
+  return (
+    <a href="#search-aside">
+      <img src={SearchIcon} height={20} width={20} alt="" />
+    </a>
+  );
 }
 
 /**
  * @param {{count: number}}
  */
 function CartBadge({count}) {
-  return <a href="#cart-aside">Cart {count}</a>;
+  return (
+    <a href="#cart-aside" className="cart-badge">
+      <img src={CartIcon} height={20} width={20} alt="cart" />{' '}
+      {count > 0 && <span className="cart-badge-count">{count}</span>}
+    </a>
+  );
 }
 
 /**
@@ -129,7 +218,7 @@ function CartToggle({cart}) {
       <Await resolve={cart}>
         {(cart) => {
           if (!cart) return <CartBadge count={0} />;
-          return <CartBadge count={cart.totalQuantity || 0} />;
+          return <CartBadge count={cart.totalQuantity || ''} />;
         }}
       </Await>
     </Suspense>
@@ -186,7 +275,7 @@ const FALLBACK_HEADER_MENU = {
  */
 function activeLinkStyle({isActive, isPending}) {
   return {
-    fontWeight: isActive ? 'bold' : undefined,
+    // fontWeight: isActive ? 'bold' : undefined,
     color: isPending ? 'grey' : 'black',
   };
 }

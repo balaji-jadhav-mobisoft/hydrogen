@@ -2,6 +2,8 @@ import {defer} from '@shopify/remix-oxygen';
 import {Await, useLoaderData, Link} from '@remix-run/react';
 import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
+import BackInStockCollectionData from '~/components/BackInStockCollection';
+import CollectionCard from '~/components/CollectionCard';
 
 /**
  * @type {MetaFunction}
@@ -15,19 +17,26 @@ export const meta = () => {
  */
 export async function loader({context}) {
   const {storefront} = context;
+  const handle = 'back-in-stock';
+  const {collection} = await storefront.query(COLLECTION_QUERY, {
+    variables: {handle},
+  });
+  console.log('Server-side collection:', collection);
   const {collections} = await storefront.query(FEATURED_COLLECTION_QUERY);
   const featuredCollection = collections.nodes[0];
   const recommendedProducts = storefront.query(RECOMMENDED_PRODUCTS_QUERY);
 
-  return defer({featuredCollection, recommendedProducts});
+  return defer({featuredCollection, recommendedProducts, collection});
 }
 
 export default function Homepage() {
   /** @type {LoaderReturnData} */
   const data = useLoaderData();
+  console.log(data, 'data');
   return (
     <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
+      {/* <FeaturedCollection collection={data.featuredCollection} /> */}
+      <BackInStockCollection collection={data.collection} />
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );
@@ -38,21 +47,42 @@ export default function Homepage() {
  *   collection: FeaturedCollectionFragment;
  * }}
  */
-function FeaturedCollection({collection}) {
+// function FeaturedCollection({collection}) {
+//   if (!collection) return null;
+//   const image = collection?.image;
+//   return (
+//     <Link
+//       className="featured-collection"
+//       to={`/collections/${collection.handle}`}
+//     >
+//       {image && (
+//         <div className="featured-collection-image">
+//           <Image data={image} sizes="100vw" />
+//         </div>
+//       )}
+//       <h1>{collection.title}</h1>
+//     </Link>
+//   );
+// }
+function BackInStockCollection({collection}) {
+  console.log('Client-side collection:', collection);
+  console.log(collection, 'cc');
   if (!collection) return null;
   const image = collection?.image;
   return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
+    <div className="featured-collection">
       {image && (
         <div className="featured-collection-image">
-          <Image data={image} sizes="100vw" />
+          <Image src={image.url} sizes="100vw" />
         </div>
       )}
-      <h1>{collection.title}</h1>
-    </Link>
+      <div className="back-in-stock-desktop">
+        <CollectionCard collection={collection} />
+      </div>
+      <div className="back-in-stock-mobile">
+        <BackInStockCollectionData collection={collection} />
+      </div>
+    </div>
   );
 }
 
@@ -99,6 +129,7 @@ const FEATURED_COLLECTION_QUERY = `#graphql
   fragment FeaturedCollection on Collection {
     id
     title
+    descriptionHtml
     image {
       id
       url
@@ -145,6 +176,27 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
       nodes {
         ...RecommendedProduct
       }
+    }
+  }
+`;
+
+const COLLECTION_QUERY = `#graphql
+  query Collection(
+    $handle: String!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      id
+      handle
+      title
+      description
+      descriptionHtml
+      image {
+      id
+      url
+      src
+    }
     }
   }
 `;

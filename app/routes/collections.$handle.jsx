@@ -20,6 +20,7 @@ export const meta = ({data}) => {
  */
 export async function loader({request, params, context}) {
   const {handle} = params;
+  console.log(params, 'params');
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
     pageBy: 8,
@@ -48,7 +49,12 @@ export default function Collection() {
   return (
     <div className="collection">
       <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
+      <main
+        dangerouslySetInnerHTML={{__html: collection.descriptionHtml}}
+        className="collection-description"
+      >
+        {/* {collection.description} */}
+      </main>
       <Pagination connection={collection.products}>
         {({nodes, isLoading, PreviousLink, NextLink}) => (
           <>
@@ -171,6 +177,7 @@ const COLLECTION_QUERY = `#graphql
       handle
       title
       description
+      descriptionHtml
       products(
         first: $first,
         last: $last,

@@ -1,0 +1,25 @@
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.collection-card-section {
+  /* padding: 2rem; */
+  position: absolute;
+  bottom: 40px;
+  left: 60px;
+  animation: fade-in 1s cubic-bezier(0.26, 0.54, 0.32, 1) 0.5s forwards;
+  animation-name: fade-in;
+  width: 380px;
+}
+
+.collection-card {
+  background: #fff;
+  padding: 1.2em;
+}
