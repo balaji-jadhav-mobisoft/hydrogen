@@ -14,7 +14,8 @@ import favicon from './assets/favicon.svg';
 import resetStyles from './styles/reset.css?url';
 import appStyles from './styles/app.css?url';
 import headerStyles from '~/components/header.css?url';
-import BackInCollectionStyle from '~/components/collectionCard.css?url';
+// import backInCollectionStyle from '~/components/collectionCard.css?url';
+
 import {Layout} from '~/components/Layout';
 
 /**
@@ -40,7 +41,7 @@ export function links() {
     {rel: 'stylesheet', href: resetStyles},
     {rel: 'stylesheet', href: appStyles},
     {rel: 'stylesheet2', href: headerStyles},
-    {rel: 'stylesheet3', href: BackInCollectionStyle},
+    // {rel: 'stylesheet3', href: backInCollectionStyle},
     {
       rel: 'preconnect',
       href: 'https://cdn.shopify.com',

@@ -1,4 +1,3 @@
-import {Link} from '@remix-run/react';
 import React from 'react';
 import './collectionCard.css';
 import BackInStockCollectionData from './BackInStockCollection';

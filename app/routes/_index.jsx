@@ -4,6 +4,9 @@ import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
 import BackInStockCollectionData from '~/components/BackInStockCollection';
 import CollectionCard from '~/components/CollectionCard';
+import ShopSelectCuts from '~/components/home-page/ShopSelectCuts';
+import GrasssRootMeets from '~/components/home-page/GrasssRootMeets';
+import BestSellerCollection from '~/components/home-page/BestSellerCollection';
 
 /**
  * @type {MetaFunction}
@@ -21,22 +24,41 @@ export async function loader({context}) {
   const {collection} = await storefront.query(COLLECTION_QUERY, {
     variables: {handle},
   });
-  console.log('Server-side collection:', collection);
+  const allCollectionsResult = await storefront.query(ALL_COLLECTIONS_QUERY, {
+    variables: {first: 4, reverse: true},
+  });
+  const blogs = await storefront.query(BLOGS_QUERY);
+  const allCollections = allCollectionsResult.collections;
+
   const {collections} = await storefront.query(FEATURED_COLLECTION_QUERY);
+  const bestSellerCollection = await storefront.query(
+    BEST_SELLER_COLLECTION_QUERY,
+    {variables: {handle: 'bestsellers'}},
+  );
   const featuredCollection = collections.nodes[0];
   const recommendedProducts = storefront.query(RECOMMENDED_PRODUCTS_QUERY);
 
-  return defer({featuredCollection, recommendedProducts, collection});
+  return defer({
+    featuredCollection,
+    recommendedProducts,
+    collection,
+    allCollections,
+    blogs,
+    bestSellerCollection,
+  });
 }
 
 export default function Homepage() {
   /** @type {LoaderReturnData} */
   const data = useLoaderData();
-  console.log(data, 'data');
+  console.log('Home page data ======>', data);
   return (
     <div className="home">
       {/* <FeaturedCollection collection={data.featuredCollection} /> */}
       <BackInStockCollection collection={data.collection} />
+      <ShopSelectCuts allCollections={data.allCollections} />
+      <GrasssRootMeets blogs={data.blogs} />
+      <BestSellerCollection bestSellerCollection={data.bestSellerCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );
@@ -65,15 +87,13 @@ export default function Homepage() {
 //   );
 // }
 function BackInStockCollection({collection}) {
-  console.log('Client-side collection:', collection);
-  console.log(collection, 'cc');
   if (!collection) return null;
   const image = collection?.image;
   return (
     <div className="featured-collection">
       {image && (
         <div className="featured-collection-image">
-          <Image src={image.url} sizes="100vw" />
+          <Image data={image} src={image.url} sizes="100vw" />
         </div>
       )}
       <div className="back-in-stock-desktop">
@@ -200,7 +220,103 @@ const COLLECTION_QUERY = `#graphql
     }
   }
 `;
+const BEST_SELLER_COLLECTION_QUERY = `#graphql
+  query Collection(
+    $handle: String!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      id
+      handle
+      title
+      products(first: 10) {
+      nodes {
+        title
+        images(first: 10) {
+          nodes {
+            url
+          }
+        }
+        priceRange {
+          maxVariantPrice {
+            amount
+          }
+        }
+        variants(first: 10) {
+          nodes {
+            availableForSale
+            weight
+            weightUnit
+          }
+        }
+        options(first: 10) {
+          values
+          id
+          name
+        }
+      }
+    }
+    }
+  }
+`;
 
+const ALL_COLLECTIONS_QUERY = `#graphql
+  fragment Collection on Collection {
+    id
+    title
+    handle
+    image {
+      id
+      url
+      altText
+      width
+      height
+    }
+  }
+  query StoreCollections(
+    $country: CountryCode
+    $first: Int
+    $language: LanguageCode
+    $reverse:Boolean!
+  ) @inContext(country: $country, language: $language) {
+    collections(
+      first: $first,
+      reverse:$reverse
+    ) {
+      nodes {
+        ...Collection
+      }
+    }
+  }
+`;
+
+const BLOGS_QUERY = `#graphql
+  query Blogs(
+    $language: LanguageCode
+  ) @inContext(language: $language) {
+    blogs(first: 10) {
+      edges {
+        node {
+          title
+          articles(first: 10) {
+            edges {
+              node {
+                id
+                contentHtml
+                title
+                image {
+                  height
+                  url
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 /** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
 /** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
 /** @typedef {import('storefrontapi.generated').FeaturedCollectionFragment} FeaturedCollectionFragment */

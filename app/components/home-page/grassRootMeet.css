@@ -1,0 +1,100 @@
+.grass-root-main-section {
+  margin: 5rem auto 3rem;
+  background-color: #f8f4f0;
+  padding: 0.5rem 6rem 1rem;
+  box-sizing: border-box;
+  @media (max-width: 48em) {
+    padding: 2rem 0rem 1rem;
+  }
+}
+
+.section-header {
+  font-size: calc(var(--typeHeaderSize) * 0.85);
+  color: #607556;
+  text-align: center;
+
+  @media (max-width: 48em) {
+    font-size: calc(var(--typeHeaderSize) * 0.85 * 0.85);
+  }
+}
+.section-header__title {
+  margin-bottom: 2px;
+}
+.grass-root-image-section {
+  display: flex;
+  @media (max-width: 48em) {
+    flex-direction: column;
+  }
+}
+
+.grass-root-inner-section {
+  flex: 1 1 calc(45% - 50px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 19px;
+  max-width: 300px; /* Adjust the max-width as per your requirement */
+  @media (max-width: 48em) {
+    flex: 1 1 calc(100% - 10px); /* Two items per row on mobile */
+    max-width: 100%; /* Remove max-width constraint */
+  }
+}
+
+.grass-root-image {
+  border-radius: 0px;
+  margin-bottom: 20px;
+  width: 19vh !important; /* Full width of the parent */
+  height: 17vh; /* Maintain aspect ratio */
+  object-fit: cover; /* Ensures the image covers the entire area */
+  aspect-ratio: 1/1;
+  z-index: 0; /* Ensure it stays below the gradient */
+  @media (max-width: 48em) {
+    width: 14vh !important;
+    height: 13vh; /* Maintain aspect ratio */
+    object-fit: cover;
+  }
+}
+
+.farming-done-section {
+  text-align: center;
+  /* margin: 5rem auto 3rem; */
+  padding: 0.1rem 12rem 1rem;
+  @media (max-width: 48em) {
+    padding: 0.1rem 3rem 1rem;
+    margin-left: 25px;
+  }
+}
+
+.farming-header-section {
+  font-size: calc(var(--typeHeaderSize) * 0.85);
+  color: #607556;
+
+  @media (max-width: 48em) {
+    font-size: calc(var(--typeHeaderSize) * 0.85 * 0.85);
+  }
+}
+
+.farming-header-title {
+  margin-bottom: 15px;
+}
+
+.farming-para-section {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0 -30px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  -webkit-flex-wrap: wrap;
+  -webkit-flex-direction: row;
+}
+
+.farming-para1 {
+  font-family: Source Sans Pro, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.2em;
+  color: #4a4a4a;
+  margin: 0 0 20px;
+}

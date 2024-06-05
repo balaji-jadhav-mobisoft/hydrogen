@@ -1,0 +1,152 @@
+.shop-select-section {
+  padding: 0 20px;
+  @media (max-width: 48em) {
+    padding: 0 9px;
+  }
+}
+
+.shop-select-cuts-heading {
+  text-align: center;
+  margin-top: 75px;
+  margin-bottom: 15px;
+  font-size: calc(var(--typeHeaderSize) * 0.9);
+  @media (max-width: 48em) {
+    margin-top: 30px;
+  }
+}
+
+.shop-select-image-section {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap; /* Allows wrapping to next line for responsive design */
+  gap: 10px;
+  padding: 0px 10px;
+  min-height: 1px;
+  @media (max-width: 48em) {
+    padding: 0px;
+    gap: 0px;
+  }
+}
+
+.shop-select-image-link-section {
+  flex: 1 1 calc(25% - 50px); /* Adjust to four items per row */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 10px;
+  max-width: 300px; /* Adjust the max-width as per your requirement */
+  height: 32vh;
+  overflow: hidden; /* Ensure the pseudo-element stays within the bounds */
+  position: relative;
+  @media (max-width: 48em) {
+    flex: 1 1 calc(45% - 10px); /* Two items per row on mobile */
+    max-width: 100%; /* Remove max-width constraint */
+    height: 27vh;
+  }
+}
+
+.shop-select-image-link-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(57, 62, 70, 0.42) 100%
+  );
+  opacity: 0; /* Initially hidden */
+  transition: opacity 1.5s; /* Smooth transition */
+  z-index: 1; /* Ensure it appears above the image but below the text */
+}
+
+.shop-select-image-link-section:hover::after {
+  opacity: 1; /* Show the gradient on hover */
+}
+
+.small-image {
+  border-radius: 0px;
+  width: 100%; /* Full width of the parent */
+  height: 100%; /* Maintain aspect ratio */
+  object-fit: cover; /* Ensures the image covers the entire area */
+  aspect-ratio: 1/1;
+  z-index: 0; /* Ensure it stays below the gradient */
+  @media (max-width: 48em) {
+    height: auto;
+    aspect-ratio: 1/1.4;
+  }
+}
+
+.shop-select-image-link-section:hover .small-image {
+  transform: scale(1.05);
+  transition: transform 0.8s; /* Smooth zoom effect */
+}
+
+.shop-select-image-link-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(57, 62, 70, 0.42) 100%
+  );
+  opacity: 0; /* Initially hidden */
+  transition: opacity 1.5s; /* Smooth transition */
+  z-index: 1; /* Ensure it appears above the image but below the text */
+}
+
+.shop-select-image-link-section:hover::before {
+  opacity: 1; /* Show the gradient on hover */
+}
+
+.shop-select-image-link-section:hover .small-image {
+  transform: scale(1.05); /* Slight zoom effect on hover */
+}
+.collection-title {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  z-index: 100;
+  margin-top: 10px;
+  color: #fff;
+  text-align: left;
+  transition: bottom 0.5s ease;
+  margin: 0 25px 25px;
+  font-size: calc(var(--typeHeaderSize) * 0.71);
+  font-family: var(--typeHeaderPrimary), var(--typeHeaderFallback);
+  font-weight: var(--typeHeaderWeight);
+  letter-spacing: var(--typeHeaderSpacing);
+  line-height: var(--typeHeaderLineHeight);
+  @media (max-width: 48em) {
+    font-size: 1rem;
+    margin: 0px;
+    bottom: 20px;
+    left: 20px;
+  }
+}
+
+.collection-title::after {
+  content: '';
+  position: absolute;
+  bottom: -5px; /* Adjust as needed */
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #fff; /* Border color */
+  transition: width 0.6s ease;
+}
+
+.shop-select-image-link-section:hover .collection-title {
+  bottom: 10px; /* New position on hover */
+}
+
+.shop-select-image-link-section:hover .collection-title::after {
+  width: 100%; /* Full width on hover */
+}

@@ -20,7 +20,6 @@ export const meta = ({data}) => {
  */
 export async function loader({request, params, context}) {
   const {handle} = params;
-  console.log(params, 'params');
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
     pageBy: 8,
