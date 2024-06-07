@@ -1,0 +1,27 @@
+.app-button {
+  position: relative;
+  background-color: var(--colorBtnPrimary);
+  color: #fff;
+  border: none;
+  padding: 15px 15px;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  font-size: 15px;
+  text-transform: uppercase;
+  margin: 0rem 2rem 2rem 2rem;
+  cursor: pointer;
+  transition: padding-right 0.5s, background-position 0.3s;
+  @media (max-width: 48em) {
+    padding: 10px 20px;
+  }
+}
+
+.app-button:hover {
+  padding-right: 50px;
+  background: #607556 url('../../assets/button-arrow.png') no-repeat;
+  background-position-x: right;
+  background-size: 30px;
+  @media (max-width: 48em) {
+    background-position: 90% -5px;
+  }
+}

@@ -7,6 +7,11 @@ import CollectionCard from '~/components/CollectionCard';
 import ShopSelectCuts from '~/components/home-page/ShopSelectCuts';
 import GrasssRootMeets from '~/components/home-page/GrasssRootMeets';
 import BestSellerCollection from '~/components/home-page/BestSellerCollection';
+import PowerOfCoOpBlog from '~/components/home-page/PowerOfCoOpBlog';
+import CoOpBlog from '~/components/home-page/CoOpBlog';
+import ChefSpecialCollection from '~/components/home-page/ChefSpecialCollection';
+import SeeOnSection from '~/components/home-page/SeeOnSection';
+import NewRecipesBlog from '~/components/home-page/NewRecipesBlog';
 
 /**
  * @type {MetaFunction}
@@ -27,7 +32,24 @@ export async function loader({context}) {
   const allCollectionsResult = await storefront.query(ALL_COLLECTIONS_QUERY, {
     variables: {first: 4, reverse: true},
   });
-  const blogs = await storefront.query(BLOGS_QUERY);
+  const blogs = await storefront.query(BLOGS_QUERY, {
+    variables: {handle: 'grass-roots-meat'},
+  });
+  const chefSpecialCollection = await storefront.query(
+    BEST_SELLER_COLLECTION_QUERY,
+    {
+      variables: {handle: 'chef-specials'},
+    },
+  );
+  const thePowerOfCoOpBlog = await storefront.query(BLOGS_QUERY, {
+    variables: {handle: 'the-power-of-co-op'},
+  });
+  const newRecipesBlog = await storefront.query(BLOGS_QUERY, {
+    variables: {handle: 'our-newest-recipes'},
+  });
+  const coOpBlog = await storefront.query(BLOGS_QUERY, {
+    variables: {handle: 'the-co-op'},
+  });
   const allCollections = allCollectionsResult.collections;
 
   const {collections} = await storefront.query(FEATURED_COLLECTION_QUERY);
@@ -45,6 +67,10 @@ export async function loader({context}) {
     allCollections,
     blogs,
     bestSellerCollection,
+    thePowerOfCoOpBlog,
+    coOpBlog,
+    chefSpecialCollection,
+    newRecipesBlog,
   });
 }
 
@@ -59,7 +85,14 @@ export default function Homepage() {
       <ShopSelectCuts allCollections={data.allCollections} />
       <GrasssRootMeets blogs={data.blogs} />
       <BestSellerCollection bestSellerCollection={data.bestSellerCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
+      <PowerOfCoOpBlog thePowerOfCoOpBlog={data.thePowerOfCoOpBlog} />
+      <ChefSpecialCollection
+        chefSpecialCollection={data.chefSpecialCollection}
+      />
+      <SeeOnSection />
+      <CoOpBlog coOpBlog={data.coOpBlog} />
+      <NewRecipesBlog newRecipesBlog={data.newRecipesBlog} />
+      {/* <RecommendedProducts products={data.recommendedProducts} /> */}
     </div>
   );
 }
@@ -233,6 +266,7 @@ const BEST_SELLER_COLLECTION_QUERY = `#graphql
       products(first: 10) {
       nodes {
         title
+        handle
         images(first: 10) {
           nodes {
             url
@@ -248,6 +282,7 @@ const BEST_SELLER_COLLECTION_QUERY = `#graphql
             availableForSale
             weight
             weightUnit
+            id
           }
         }
         options(first: 10) {
@@ -294,17 +329,18 @@ const ALL_COLLECTIONS_QUERY = `#graphql
 const BLOGS_QUERY = `#graphql
   query Blogs(
     $language: LanguageCode
+    $handle: String!
   ) @inContext(language: $language) {
-    blogs(first: 10) {
-      edges {
-        node {
+    blog(handle: $handle) {
           title
+          handle
           articles(first: 10) {
             edges {
               node {
                 id
                 contentHtml
                 title
+                handle
                 image {
                   height
                   url
@@ -312,11 +348,10 @@ const BLOGS_QUERY = `#graphql
               }
             }
           }
-        }
-      }
     }
   }
 `;
+
 /** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
 /** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
 /** @typedef {import('storefrontapi.generated').FeaturedCollectionFragment} FeaturedCollectionFragment */

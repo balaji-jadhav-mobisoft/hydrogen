@@ -1,5 +1,6 @@
 import {Link} from '@remix-run/react';
 import React, {useEffect, useState} from 'react';
+import AppButton from './common/AppButton';
 
 const BackInStockCollectionData = ({collection}) => {
   const [isClient, setIsClient] = useState(false);
@@ -16,9 +17,7 @@ const BackInStockCollectionData = ({collection}) => {
         }}
       ></p>
       <Link to={`/collections/${collection.handle}`}>
-        <button className="back-in-stock-collection-button">
-          Shop Back In Stock
-        </button>
+        <AppButton title={'Shop Back In Stock'} />
       </Link>
     </>
   );

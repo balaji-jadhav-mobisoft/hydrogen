@@ -25,6 +25,7 @@ const ShopSelectCuts = ({allCollections}) => {
                         src={allCollection.image.url}
                         data={allCollection.image.url}
                         className="small-image"
+                        sizes="(max-width: 600px) 100vw, 50vw"
                       />
                       <h4 className="collection-title ">
                         {allCollection.title}

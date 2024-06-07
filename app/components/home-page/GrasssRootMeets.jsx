@@ -4,6 +4,7 @@ import {Image} from '@shopify/hydrogen';
 
 const GrasssRootMeets = ({blogs}) => {
   if (!blogs) return null;
+  const {blog} = blogs;
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -18,33 +19,22 @@ const GrasssRootMeets = ({blogs}) => {
           </h3>
         </header>
         <div className="grass-root-image-section">
-          {blogs?.blogs?.edges.map((blog) => {
-            const {node} = blog;
-            const {articles} = node;
-            const {edges} = articles;
+          {blog?.articles?.edges?.map((article, index) => {
+            const {node} = article;
             return (
-              <>
-                {edges.map((article) => {
-                  const {node} = article;
-                  return (
-                    <div
-                      className="grass-root-inner-section"
-                      // style={{display: 'flex', flexDirection: 'column'}}
-                    >
-                      <Image
-                        className="grass-root-image"
-                        src={node.image.url}
-                        data={node.image.url}
-                      />
-                      <p
-                        dangerouslySetInnerHTML={{
-                          __html: isClient ? node.contentHtml : '',
-                        }}
-                      ></p>
-                    </div>
-                  );
-                })}
-              </>
+              <div key={index} className="grass-root-inner-section">
+                <Image
+                  className="grass-root-image"
+                  src={node.image.url}
+                  data={node.image.url}
+                  sizes="(max-width: 600px) 100vw, 50vw"
+                />
+                <p
+                  dangerouslySetInnerHTML={{
+                    __html: isClient ? node.contentHtml : '',
+                  }}
+                ></p>
+              </div>
             );
           })}
         </div>
