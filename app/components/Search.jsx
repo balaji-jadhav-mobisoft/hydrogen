@@ -120,6 +120,7 @@ function SearchResultsProductsGrid({products, searchTerm}) {
             return (
               <div className="search-results-item" key={product.id}>
                 <Link
+                  aria-label={`Shop ${product.title}`}
                   prefetch="intent"
                   to={`/products/${product.handle}${trackingParams}`}
                 >

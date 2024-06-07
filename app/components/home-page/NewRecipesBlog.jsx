@@ -19,10 +19,13 @@ const NewRecipesBlog = ({newRecipesBlog}) => {
           return (
             <div key={index} className="recipe-section">
               <Link
+                aria-label={`Shop ${recipe.node.title}`}
                 to={`/blogs/${blog.handle}/${recipe.node.handle}`}
                 className="recipe-image-link"
               >
                 <Image
+                  alt="recipe image"
+                  aria-label="Recipe Image"
                   className={`recipe-image`}
                   src={recipe.node.image.url}
                   data={recipe.node.image.url}
@@ -31,11 +34,13 @@ const NewRecipesBlog = ({newRecipesBlog}) => {
               </Link>
               <Link
                 to={`/blogs/${blog.handle}/${recipe.node.handle}`}
+                aria-label={`Shop ${recipe.node.title}`}
                 className="recipe-title-link"
               >
                 <h3 className="recipe-title">{recipe.node.title}</h3>
               </Link>
               <Link
+                aria-label={`Shop ${recipe.node.title}`}
                 to={`/blogs/${blog.handle}/${recipe.node.handle}`}
                 // className="recipe-title-link"
               >

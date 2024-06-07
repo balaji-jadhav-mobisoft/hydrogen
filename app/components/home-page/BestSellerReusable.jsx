@@ -42,7 +42,11 @@ const BestSellerReusable = ({bestSellerCollection, title}) => {
     <div className="best-seller-main-section">
       <header className="home-page-title">
         <h3 className="h2">{title}</h3>
-        <Link key={collection.id} to={`/collections/${collection.handle}`}>
+        <Link
+          key={collection.id}
+          to={`/collections/${collection.handle}`}
+          aria-label={`Shop View All`}
+        >
           <h5 className="view-all-section">View All</h5>
         </Link>
       </header>
@@ -71,6 +75,8 @@ const BestSellerReusable = ({bestSellerCollection, title}) => {
               <div key={index} className="best-seller-inner-section">
                 <div className="best-seller-image-container">
                   <Image
+                    alt="best seller image"
+                    aria-label="Best Seller Image"
                     className="best-seller-image"
                     src={imageUrl}
                     data={imageUrl}
@@ -82,7 +88,11 @@ const BestSellerReusable = ({bestSellerCollection, title}) => {
                   <span>{sizeOption}</span>
                 </div>
                 <div className="best-seller-price">
-                  <Link key={val.id} to={`/products/${val.handle}`}>
+                  <Link
+                    key={val.id}
+                    to={`/products/${val.handle}`}
+                    aria-label={`Shop ${val.title}`}
+                  >
                     ₹{price}
                   </Link>
                 </div>

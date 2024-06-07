@@ -1,6 +1,5 @@
 import React from 'react';
 import './seeOnSection.css';
-import {Image} from '@shopify/hydrogen';
 import ForbLogo from '~/assets/forbes-logo.webp';
 import FoodNetworkLogo from '../../assets/food_network_logo.webp';
 import CivilEatLogo from '../../assets/civil_eat_logo.webp';
@@ -21,7 +20,7 @@ const SeeOnSection = () => {
   return (
     <div className="logos-section">
       {logos.map((logo, index) => (
-        <img
+        <img aria-label='See On Image'
           key={index}
           className="logo-image"
           src={logo.src}

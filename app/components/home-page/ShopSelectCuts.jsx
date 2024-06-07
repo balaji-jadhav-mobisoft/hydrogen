@@ -17,11 +17,12 @@ const ShopSelectCuts = ({allCollections}) => {
                 {resolvedCollections?.nodes.map((allCollection) => {
                   return (
                     <Link
+                      aria-label={`Shop ${allCollection.title}`}
                       key={allCollection.id}
                       className="shop-select-image-link-section"
                       to={`/collections/${allCollection.handle}`}
                     >
-                      <Image
+                      <Image aria-label='Shop Select Image' alt='shop select image'
                         src={allCollection.image.url}
                         data={allCollection.image.url}
                         className="small-image"

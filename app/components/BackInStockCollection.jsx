@@ -16,7 +16,10 @@ const BackInStockCollectionData = ({collection}) => {
           __html: isClient ? collection?.descriptionHtml : '',
         }}
       ></p>
-      <Link to={`/collections/${collection.handle}`}>
+      <Link
+        to={`/collections/${collection.handle}`}
+        aria-label={`Shop ${collection.title}`}
+      >
         <AppButton title={'Shop Back In Stock'} />
       </Link>
     </>

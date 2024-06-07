@@ -28,6 +28,8 @@ const HomeBlogs = ({homeBlogs, reverseOrder = false, btnTitle}) => {
             <AppButton btnClassName={'our-farm-btn'} title={btnTitle} />
           </div>
           <Image
+            alt="blog image"
+            aria-label="Blog image"
             className={`blog-image`}
             src={blog.node.image.url}
             data={blog.node.image.url}

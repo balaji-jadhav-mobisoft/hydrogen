@@ -24,6 +24,8 @@ const GrasssRootMeets = ({blogs}) => {
             return (
               <div key={index} className="grass-root-inner-section">
                 <Image
+                  alt="grass root image"
+                  aria-label="Grass Root Image"
                   className="grass-root-image"
                   src={node.image.url}
                   data={node.image.url}

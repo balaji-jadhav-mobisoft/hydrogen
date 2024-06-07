@@ -126,7 +126,12 @@ function BackInStockCollection({collection}) {
     <div className="featured-collection">
       {image && (
         <div className="featured-collection-image">
-          <Image data={image} src={image.url} sizes="100vw" />
+          <Image
+            aria-label="Featured Collection Image"
+            data={image}
+            src={image.url}
+            sizes="100vw"
+          />
         </div>
       )}
       <div className="back-in-stock-desktop">
@@ -154,11 +159,14 @@ function RecommendedProducts({products}) {
             <div className="recommended-products-grid">
               {products.nodes.map((product) => (
                 <Link
+                  aria-label={`Shop ${product.title}`}
                   key={product.id}
                   className="recommended-product"
                   to={`/products/${product.handle}`}
                 >
                   <Image
+                    alt="recommended product image"
+                    aria-label="Recommended Product Image"
                     data={product.images.nodes[0]}
                     aspectRatio="1/1"
                     sizes="(min-width: 45em) 20vw, 50vw"
