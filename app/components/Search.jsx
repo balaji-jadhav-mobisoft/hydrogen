@@ -335,18 +335,28 @@ function PredictiveSearchResult({goToSearchResult, items, searchTerm, type}) {
     searchTerm.current
   }&type=${pluralToSingularSearchType(type)}`;
 
+  // console.log(type, 'sss');
+
   return (
     <div className="predictive-search-result" key={type}>
       <Link prefetch="intent" to={categoryUrl} onClick={goToSearchResult}>
-        <h5>{isSuggestions ? 'Suggestions' : type}</h5>
+        <h5>{type === 'products' ? 'PRODUCTS' : ''}</h5>
+        {/* <h5>{isSuggestions ? 'Suggestions' : type}</h5> */}
       </Link>
       <ul>
         {items.map((item) => (
-          <SearchResultItem
-            goToSearchResult={goToSearchResult}
-            item={item}
-            key={item.id}
-          />
+          <>
+            {item.__typename === 'SearchQuerySuggestion' ||
+            item.__typename !== 'Product' ? (
+              ''
+            ) : (
+              <SearchResultItem
+                goToSearchResult={goToSearchResult}
+                item={item}
+                key={item.id}
+              />
+            )}
+          </>
         ))}
       </ul>
     </div>

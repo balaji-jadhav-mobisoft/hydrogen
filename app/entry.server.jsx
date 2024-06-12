@@ -15,6 +15,12 @@ export default async function handleRequest(
   responseHeaders,
   remixContext,
 ) {
+  // createContentSecurityPolicy({
+  //   connectSrc: [
+  //     // (ie. 'wss://<your-ngrok-domain>.app:*')
+  //     'wss://https://hydrogen-test-app1-55c24494d459efd622b8.o2.myshopify.dev/:*',
+  //   ],
+  // });
   const {nonce, header, NonceProvider} = createContentSecurityPolicy();
 
   const body = await renderToReadableStream(

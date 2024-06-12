@@ -49,30 +49,32 @@ function CartAside({cart}) {
 function SearchAside() {
   return (
     <Aside id="search-aside" heading="SEARCH">
-      <div className="predictive-search">
+      <div className="predictive-search-form-section">
         <br />
         <PredictiveSearchForm>
           {({fetchResults, inputRef}) => (
-            <div>
-              <input
-                name="q"
-                onChange={fetchResults}
-                onFocus={fetchResults}
-                placeholder="Search"
-                ref={inputRef}
-                type="search"
-              />
-              &nbsp;
-              <button
-                onClick={() => {
-                  window.location.href = inputRef?.current?.value
-                    ? `/search?q=${inputRef.current.value}`
-                    : `/search`;
-                }}
-              >
-                Search
-              </button>
-            </div>
+            <>
+              <div>
+                <input
+                  name="q"
+                  onChange={fetchResults}
+                  onFocus={fetchResults}
+                  placeholder="Search"
+                  ref={inputRef}
+                  type="search"
+                />
+                &nbsp;
+                <button
+                  onClick={() => {
+                    window.location.href = inputRef?.current?.value
+                      ? `/search?q=${inputRef.current.value}`
+                      : `/search`;
+                  }}
+                >
+                  Search
+                </button>
+              </div>
+            </>
           )}
         </PredictiveSearchForm>
         <PredictiveSearchResults />

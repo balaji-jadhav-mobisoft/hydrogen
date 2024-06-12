@@ -170,6 +170,36 @@ aside li {
   }
 }
 
+.header-section1 {
+  overflow: hidden;
+  transition: height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+.no-scroll {
+  overflow: hidden;
+}
+.header-section1.open {
+  height: max-content;
+  opacity: 1;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none; /* Prevent clicks when invisible */
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
 .header-menu-mobile-toggle {
   @media (min-width: 48em) {
     display: none;
@@ -299,11 +329,74 @@ aside li {
   height: calc(100vh - var(--header-height) - 40px);
   overflow-y: auto;
 }
+.predictive-search-container {
+  width: 99vw;
+  overflow-x: hidden;
+}
+
+.predictive-search-results {
+  height: calc(90vh - var(--header-height) - 40px);
+  overflow-y: auto;
+  margin-left: 25px;
+}
+
+.search-asidee {
+  margin-left: -12px;
+}
+
+.input-search-container {
+  width: 100vw;
+  display: flex;
+  justify-content: space-around;
+}
+
+.input-search {
+  width: 85vw;
+  padding: 20px;
+  height: 60px;
+  font-size: 20px;
+  border: none;
+  outline: none;
+}
+
+.input-search:focus {
+  border: none;
+  outline: none;
+}
+.close {
+  width: 60px;
+  align-content: center;
+  @media (max-width: 48em) {
+    width: 30px;
+  }
+}
+
+.close:hover {
+  cursor: pointer;
+}
+.input-search {
+  -webkit-appearance: none; /* Hides the default clear button in Chrome/Safari */
+  -moz-appearance: textfield; /* Hides the default clear button in Firefox */
+  appearance: none; /* Standard property to hide default clear button */
+}
+
+.input-search::-webkit-search-cancel-button {
+  -webkit-appearance: none; /* Hides the clear button in Chrome/Safari */
+}
+
+.close img {
+  height: 20px;
+  width: 20px;
+}
 
 .predictive-search-form {
   background: var(--color-light);
   position: sticky;
   top: 0;
+}
+
+.predictive-search-form {
+  width: 98%;
 }
 
 .predictive-search-result {

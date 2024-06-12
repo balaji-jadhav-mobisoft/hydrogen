@@ -2,7 +2,7 @@ import {defer} from '@shopify/remix-oxygen';
 import {useLoaderData} from '@remix-run/react';
 import {getPaginationVariables} from '@shopify/hydrogen';
 
-import {SearchForm, SearchResults, NoSearchResults} from '~/components/Search';
+import {SearchResults, NoSearchResults, SearchForm} from '~/components/Search';
 
 /**
  * @type {MetaFunction}
@@ -39,7 +39,7 @@ export async function loader({request, context}) {
   }
 
   const totalResults = Object.values(data).reduce((total, value) => {
-    return total + value.nodes.length;
+    return total + value.nodes?.length;
   }, 0);
 
   const searchResults = {
@@ -56,6 +56,8 @@ export async function loader({request, context}) {
 export default function SearchPage() {
   /** @type {LoaderReturnData} */
   const {searchTerm, searchResults} = useLoaderData();
+  console.log(searchTerm, 'searchTer=====');
+  console.log(searchResults, 'searchResults=====');
 
   return (
     <div className="search">
@@ -180,6 +182,75 @@ const SEARCH_QUERY = `#graphql
   }
 `;
 
+// const SEARCH_QUERY = `#graphql
+//   query PredictiveSearch(
+//     $language: LanguageCode
+//     $query: String!
+//   ) @inContext(language: $language) {
+//     predictiveSearch(query:$query) {
+//     queries {
+//       text
+//     }
+//     collections {
+//       id
+//       title
+//     }
+//     products {
+//       id
+//       title
+//       availableForSale
+//       descriptionHtml
+//       featuredImage {
+//         url
+//       }
+//       priceRange {
+//         maxVariantPrice {
+//           amount
+//           currencyCode
+//         }
+//         minVariantPrice {
+//           amount
+//           currencyCode
+//         }
+//       }
+//       variants(first: 10) {
+//         edges {
+//           node {
+//             availableForSale
+//             compareAtPrice {
+//               amount
+//               currencyCode
+//             }
+//             image {
+//               url
+//             }
+//             price {
+//               amount
+//               currencyCode
+//             }
+//             quantityAvailable
+//             title
+//             weight
+//             weightUnit
+//           }
+//         }
+//         pageInfo {
+//           endCursor
+//           hasNextPage
+//           hasPreviousPage
+//           startCursor
+//         }
+//       }
+//     }
+//     pages {
+//       id
+//     }
+//     articles {
+//       id
+//     }
+//   }
+//   }
+// `;
 /** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
 /** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
 /** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */

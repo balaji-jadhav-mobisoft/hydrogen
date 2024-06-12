@@ -1,5 +1,5 @@
 import {Await, NavLink} from '@remix-run/react';
-import {Suspense} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {useRootLoaderData} from '~/lib/root-data';
 import './header.css';
 import HeaderIcon from '~/assets/go-green.jpg';
@@ -8,50 +8,89 @@ import SearchIcon from '~/assets/search.svg';
 import UserIcon from '~/assets/user-icon.svg';
 import DownArrow from '~/assets/down.svg';
 import MenuIcon from '~/assets/menu_icon.svg';
+import SearchForm from './SearchForm';
 /**
  * @param {HeaderProps}
  */
 export function Header({header, isLoggedIn, cart}) {
   const {shop, menu} = header;
+  const [model, setModel] = useState(false);
+  const closeModel = () => setModel(false);
+  useEffect(() => {
+    if (model) {
+      document.body.classList.add('no-scroll');
+    } else {
+      document.body.classList.remove('no-scroll');
+    }
+    return () => document.body.classList.remove('no-scroll');
+  }, [model]);
   return (
     <>
       <div className="top-header" style={{backgroundColor: '#607556'}}>
         <TopHeader />
       </div>
-      <header
-        className="header header-section"
-        style={{borderBottom: '1px solid', borderBottomColor: '#d4d4d4'}}
-      >
-        <div className="header-top-sec">
-          <div className="header-icon-section">
-            <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-              {/* <strong>{shop.name}</strong> */}
-              <div style={{maxWidth: '230px'}}>
-                <img
-                  style={{height: 'auto', width: '100%'}}
-                  src={HeaderIcon}
-                  alt="sss"
-                />
-              </div>
-            </NavLink>
-          </div>
-          <div className="header-icon-section" style={{width: '80%'}}>
-            <HeaderMenu
-              menu={menu}
-              viewport="desktop"
-              primaryDomainUrl={header.shop.primaryDomain.url}
-            />
-          </div>
+
+      {model ? (
+        <>
+          {console.log(model, 'model')}
           <div
+            className={`modal-overlay ${model ? 'open' : ''}`}
+            onClick={closeModel}
+          ></div>
+          <div
+            className={`header header-section1 ${model ? 'open' : ''}`}
             style={{
-              alignContent: 'center',
-              width: '20%',
+              borderBottom: '1px solid',
+              borderBottomColor: '#d4d4d4',
             }}
           >
-            <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+            <SearchForm setModel={setModel} />
           </div>
-        </div>
-      </header>
+        </>
+      ) : (
+        <header
+          className="header header-section"
+          style={{
+            borderBottom: '1px solid',
+            borderBottomColor: '#d4d4d4',
+            flexDirection: 'column',
+          }}
+        >
+          <div className="header-top-sec">
+            <div className="header-icon-section">
+              <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
+                {/* <strong>{shop.name}</strong> */}
+                <div style={{maxWidth: '230px'}}>
+                  <img
+                    style={{height: 'auto', width: '100%'}}
+                    src={HeaderIcon}
+                    alt="sss"
+                  />
+                </div>
+              </NavLink>
+            </div>
+            <div className="header-icon-section" style={{width: '80%'}}>
+              <HeaderMenu
+                menu={menu}
+                viewport="desktop"
+                primaryDomainUrl={header.shop.primaryDomain.url}
+              />
+            </div>
+            <div
+              style={{
+                alignContent: 'center',
+                width: '20%',
+              }}
+            >
+              <HeaderCtas
+                isLoggedIn={isLoggedIn}
+                cart={cart}
+                setModel={setModel}
+              />
+            </div>
+          </div>
+        </header>
+      )}
     </>
   );
 }
@@ -153,7 +192,7 @@ export function HeaderMenu({menu, primaryDomainUrl, viewport}) {
 /**
  * @param {Pick<HeaderProps, 'isLoggedIn' | 'cart'>}
  */
-function HeaderCtas({isLoggedIn, cart}) {
+function HeaderCtas({isLoggedIn, cart, setModel}) {
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
@@ -175,7 +214,7 @@ function HeaderCtas({isLoggedIn, cart}) {
           </Await>
         </Suspense>
       </NavLink>
-      <SearchToggle />
+      <SearchToggle setModel={setModel} />
       <CartToggle cart={cart} />
     </nav>
   );
@@ -189,11 +228,19 @@ function HeaderMenuMobileToggle() {
   );
 }
 
-function SearchToggle() {
+function SearchToggle({setModel}) {
   return (
-    <a href="#search-aside">
-      <img src={SearchIcon} height={20} width={20} alt="" />
-    </a>
+    <>
+      <span>
+        <img
+          src={SearchIcon}
+          height={20}
+          width={20}
+          alt=""
+          onClick={() => setModel(true)}
+        />
+      </span>
+    </>
   );
 }
 
