@@ -199,7 +199,7 @@ function HeaderCtas({isLoggedIn, cart, setModel}) {
       <NavLink
         className="account-sign-in-section"
         prefetch="intent"
-        to="/account"
+        to="/login"
         style={activeLinkStyle}
       >
         <Suspense fallback="Sign in">
