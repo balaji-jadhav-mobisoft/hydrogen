@@ -7,6 +7,7 @@ import {
   Money,
 } from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
+import Breadcrumb from '~/components/common/Breadcrumb';
 
 /**
  * @type {MetaFunction<typeof loader>}
@@ -44,7 +45,12 @@ export async function loader({request, params, context}) {
 export default function Collection() {
   /** @type {LoaderReturnData} */
   const {collection} = useLoaderData();
-
+  const breadcrumbItems = [
+    {title: 'Home', path: '/'},
+    {title: 'Collections', path: '/collections'},
+    {title: collection.title, path: `/collections/${collection.handle}`},
+  ];
+  console.log(collection, 'collection==');
   return (
     <div className="collection">
       <h1>{collection.title}</h1>
@@ -54,9 +60,11 @@ export default function Collection() {
       >
         {/* {collection.description} */}
       </main>
+      <Breadcrumb items={breadcrumbItems} />
       <Pagination connection={collection.products}>
         {({nodes, isLoading, PreviousLink, NextLink}) => (
           <>
+            <>{console.log(nodes, 'node')}</>
             <PreviousLink>
               {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
             </PreviousLink>
@@ -98,14 +106,21 @@ function ProductsGrid({products}) {
  * }}
  */
 function ProductItem({product, loading}) {
+  const {collection} = useLoaderData();
+  console.log(collection, 'ssss');
   const variant = product.variants.nodes[0];
-  const variantUrl = useVariantUrl(product.handle, variant.selectedOptions);
+  const variantUrl = useVariantUrl(
+    product.handle,
+    variant.selectedOptions,
+    collection.handle,
+  );
   return (
     <Link
       className="product-item"
       key={product.id}
-      prefetch="intent"
-      to={variantUrl}
+      // prefetch="intent"
+      // to={variantUrl}
+      to={`/collections/${collection.handle}/products/${product.handle}`}
     >
       {product.featuredImage && (
         <Image

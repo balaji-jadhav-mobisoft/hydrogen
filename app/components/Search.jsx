@@ -335,8 +335,6 @@ function PredictiveSearchResult({goToSearchResult, items, searchTerm, type}) {
     searchTerm.current
   }&type=${pluralToSingularSearchType(type)}`;
 
-  // console.log(type, 'sss');
-
   return (
     <div className="predictive-search-result" key={type}>
       <Link prefetch="intent" to={categoryUrl} onClick={goToSearchResult}>

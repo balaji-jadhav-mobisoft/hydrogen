@@ -199,7 +199,7 @@ function HeaderCtas({isLoggedIn, cart, setModel}) {
       <NavLink
         className="account-sign-in-section"
         prefetch="intent"
-        to="/login"
+        to="/account"
         style={activeLinkStyle}
       >
         <Suspense fallback="Sign in">
@@ -233,6 +233,7 @@ function SearchToggle({setModel}) {
     <>
       <span>
         <img
+          style={{cursor: 'pointer'}}
           src={SearchIcon}
           height={20}
           width={20}

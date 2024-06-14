@@ -1,5 +1,9 @@
 import {NavLink} from '@remix-run/react';
 import {useRootLoaderData} from '~/lib/root-data';
+import HeaderIcon from '~/assets/go_green_image.webp';
+import FacebookIcon from '~/assets/facebook.svg';
+import PinterestIcon from '~/assets/pinterest.svg';
+import InstaGramIcon from '~/assets/instagram.svg';
 
 /**
  * @param {FooterQuery & {shop: HeaderQuery['shop']}}
@@ -23,8 +27,27 @@ export function Footer({menu, shop}) {
 function FooterMenu({menu, primaryDomainUrl}) {
   const {publicStoreDomain} = useRootLoaderData();
 
+  const icons = [FacebookIcon, PinterestIcon, InstaGramIcon];
+
   return (
     <nav className="footer-menu" role="navigation">
+      <div>
+        <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
+          {/* <strong>{shop.name}</strong> */}
+          <div style={{maxWidth: '230px'}}>
+            <img
+              style={{height: 'auto', width: '100%'}}
+              src={HeaderIcon}
+              alt="sss"
+            />
+          </div>
+        </NavLink>
+        <div className="social-media-icons">
+          {icons.map((val) => (
+            <img style={{height: '25px', width: '25px'}} src={val} alt="sss" />
+          ))}
+        </div>
+      </div>
       {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
         if (!item.url) return null;
         // if the url is internal, we strip the domain
@@ -40,15 +63,41 @@ function FooterMenu({menu, primaryDomainUrl}) {
             {item.title}
           </a>
         ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
+          <>
+            <div>
+              <h5
+                className="footer-main-title"
+                style={{textTransform: 'uppercase'}}
+              >
+                {' '}
+                {item.title}
+              </h5>
+              {item?.items.map((nestedItems) => {
+                if (!nestedItems.url) return null;
+                console.log(nestedItems, 'items====>');
+                // if the url is internal, we strip the domain
+                const nestedUrl =
+                  nestedItems.url.includes('myshopify.com') ||
+                  nestedItems.url.includes(publicStoreDomain) ||
+                  nestedItems.url.includes(primaryDomainUrl)
+                    ? new URL(nestedItems.url).pathname
+                    : nestedItems.url;
+                return (
+                  <div style={{marginBottom: '10px'}}>
+                    <NavLink
+                      end
+                      key={nestedItems.id}
+                      prefetch="intent"
+                      style={activeLinkStyle}
+                      to={nestedUrl}
+                    >
+                      {nestedItems.title}
+                    </NavLink>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         );
       })}
     </nav>

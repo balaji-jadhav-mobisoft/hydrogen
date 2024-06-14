@@ -251,22 +251,56 @@ aside li {
 * --------------------------------------------------
 */
 .footer {
-  background: var(--color-dark);
+  /* background: var(--color-dark); */
+  background: #f5f5f5;
   margin-top: auto;
 }
 
 .footer-menu {
-  align-items: center;
+  /* align-items: center; */
   display: flex;
-  grid-gap: 1rem;
-  padding: 1rem;
+  /* justify-content: space-between; */
+  grid-gap: 6rem;
+  padding: 6rem;
+  @media (max-width: 45em) {
+    flex-direction: column;
+    grid-gap: 2rem;
+    padding: 2rem;
+  }
 }
 
 .footer-menu a {
-  color: var(--color-light);
+  color: #607556 !important;
+  /* color: var(--color-light); */
 }
 
+#shadow-host-companion {
+  padding: 0rem !important;
+}
+
+.footer-main-title {
+  text-transform: uppercase;
+  color: #607556;
+  letter-spacing: 0.2em;
+  font-size: calc(var(--typeHeaderSize) * 0.42);
+  font-family: Lora;
+  /* @media (max-width: 45em) {
+    flex-direction: column;
+    grid-gap: 2rem;
+    padding: 2rem;
+  } */
+}
+.social-media-icons {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 30px;
+  margin-top: 20px;
+  @media (max-width: 45em) {
+    padding: 10px 125px 0px 10px;
+  }
+}
 /*
+
 * --------------------------------------------------
 * components/Cart
 * --------------------------------------------------
