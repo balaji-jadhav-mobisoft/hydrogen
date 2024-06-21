@@ -98,3 +98,56 @@
   color: #4a4a4a;
   margin: 0 0 20px;
 }
+
+.how-it-works-cards {
+  display: flex;
+  margin-top: 20px;
+  @media (max-width: 48em) {
+    flex-wrap: wrap;
+  }
+}
+
+.how-it-works-card {
+  background-color: #ffffff;
+  border: 1px solid #607556;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  width: calc(50% - 20px); /* Adjust as needed */
+  margin-right: 45px; /* Adjust as needed */
+  @media (max-width: 48em) {
+    width: 100%;
+    margin: 15px 20px;
+    padding: 30px 15px;
+  }
+}
+
+.how-it-works-card:last-child {
+  margin-right: 0;
+  @media (max-width: 48em) {
+    margin: 15px 20px;
+  }
+}
+
+.how-it-works-number {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.how-it-works-number-inner {
+  background-color: #607556;
+  border-radius: 100%;
+  font-size: 24px;
+  width: 40px;
+  height: 40px;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.how-it-works-desc {
+  text-align: center;
+  font-size: 16px;
+  color: #666666;
+}

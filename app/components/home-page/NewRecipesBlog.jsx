@@ -3,7 +3,7 @@ import React from 'react';
 import './newRecipesBlog.css';
 import {Link} from '@remix-run/react';
 import AppButton from '../common/AppButton';
-const NewRecipesBlog = ({newRecipesBlog}) => {
+const NewRecipesBlog = ({newRecipesBlog, showReadMoreButton}) => {
   if (!newRecipesBlog) return null;
   const {blog} = newRecipesBlog;
   const {articles} = blog;
@@ -39,16 +39,18 @@ const NewRecipesBlog = ({newRecipesBlog}) => {
               >
                 <h3 className="recipe-title">{recipe.node.title}</h3>
               </Link>
-              <Link
-                aria-label={`Shop ${recipe.node.title}`}
-                to={`/blogs/${blog.handle}/${recipe.node.handle}`}
-                // className="recipe-title-link"
-              >
-                <AppButton
-                  title={'READ MORE'}
-                  btnClassName={'new-recipe-read-more-button'}
-                />
-              </Link>
+              {showReadMoreButton && (
+                <Link
+                  aria-label={`Shop ${recipe.node.title}`}
+                  to={`/blogs/${blog.handle}/${recipe.node.handle}`}
+                  // className="recipe-title-link"
+                >
+                  <AppButton
+                    title={'READ MORE'}
+                    btnClassName={'new-recipe-read-more-button'}
+                  />
+                </Link>
+              )}
             </div>
           );
         })}

@@ -22,9 +22,11 @@ const ShopSelectCuts = ({allCollections}) => {
                       className="shop-select-image-link-section"
                       to={`/collections/${allCollection.handle}`}
                     >
-                      <Image aria-label='Shop Select Image' alt='shop select image'
-                        src={allCollection.image.url}
-                        data={allCollection.image.url}
+                      <Image
+                        aria-label="Shop Select Image"
+                        alt="shop select image"
+                        src={allCollection?.image?.url}
+                        data={allCollection?.image?.url}
                         className="small-image"
                         sizes="(max-width: 600px) 100vw, 50vw"
                       />

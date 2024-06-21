@@ -32,7 +32,6 @@ export function Header({header, isLoggedIn, cart}) {
 
       {model ? (
         <>
-          {console.log(model, 'model')}
           <div
             className={`modal-overlay ${model ? 'open' : ''}`}
             onClick={closeModel}
@@ -129,7 +128,7 @@ export function HeaderMenu({menu, primaryDomainUrl, viewport}) {
   }
 
   const renderMenuItems = (items) => {
-    return items.map((item) => {
+    return items.slice(0, 5).map((item) => {
       if (!item.url) return null;
 
       const url =

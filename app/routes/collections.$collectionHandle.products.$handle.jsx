@@ -22,7 +22,6 @@ export const meta = ({data}) => {
  */
 export async function loader({params, request, context}) {
   const {handle} = params;
-  console.log(params, 'params');
   const {storefront} = context;
 
   if (!handle) {

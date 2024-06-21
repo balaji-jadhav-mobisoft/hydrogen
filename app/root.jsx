@@ -14,8 +14,6 @@ import favicon from './assets/favicon.svg';
 import resetStyles from './styles/reset.css?url';
 import appStyles from './styles/app.css?url';
 import headerStyles from '~/components/header.css?url';
-// import backInCollectionStyle from '~/components/collectionCard.css?url';
-
 import {Layout} from '~/components/Layout';
 
 /**
@@ -60,6 +58,8 @@ export function links() {
 export async function loader({context}) {
   const {storefront, customerAccount, cart} = context;
   const publicStoreDomain = context.env.PUBLIC_STORE_DOMAIN;
+  const judgeMePrivateToken = context.env.JUDGEME_PRIVATE_TOKEN;
+  const judgeMeShopDomain = context.env.PUBLIC_STORE_DOMAIN;
 
   const isLoggedInPromise = customerAccount.isLoggedIn();
   const cartPromise = cart.get();
@@ -71,6 +71,11 @@ export async function loader({context}) {
       footerMenuHandle: 'footer', // Adjust to your footer menu handle
     },
   });
+
+  const response = await fetch(
+    `https://judge.me/api/v1/reviews?api_token=${judgeMePrivateToken}&shop_domain=${judgeMeShopDomain}`,
+  );
+  const reviews = await response.json();
 
   // await the header query (above the fold)
   const headerPromise = storefront.query(HEADER_QUERY, {
@@ -87,6 +92,7 @@ export async function loader({context}) {
       header: await headerPromise,
       isLoggedIn: isLoggedInPromise,
       publicStoreDomain,
+      reviews: reviews.reviews,
     },
     {
       headers: {
@@ -113,6 +119,7 @@ export default function App() {
         <Layout {...data}>
           <Outlet />
         </Layout>
+
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>

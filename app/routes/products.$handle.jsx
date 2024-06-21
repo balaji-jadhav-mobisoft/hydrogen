@@ -1,4 +1,4 @@
-import {Suspense} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {defer, redirect} from '@shopify/remix-oxygen';
 import {Await, Link, useLoaderData} from '@remix-run/react';
 import {
@@ -7,8 +7,15 @@ import {
   VariantSelector,
   getSelectedProductOptions,
   CartForm,
+  Video,
 } from '@shopify/hydrogen';
 import {getVariantUrl} from '~/lib/variants';
+import NextIcon from '~/assets/right-arrow.png';
+import PrevIcon from '~/assets/left-arrow.png';
+import {BLOGS_QUERY} from './_index';
+import GrasssRootMeets from '~/components/home-page/GrasssRootMeets';
+import {PRODUCT_RECOMMENDATION} from '~/graphql/products-query/ProductRecommendationQuery';
+import BestSellerReusable from '~/components/home-page/BestSellerReusable';
 
 /**
  * @type {MetaFunction<typeof loader>}
@@ -32,10 +39,17 @@ export async function loader({params, request, context}) {
   const {product} = await storefront.query(PRODUCT_QUERY, {
     variables: {handle, selectedOptions: getSelectedProductOptions(request)},
   });
+  const blogs = await storefront.query(BLOGS_QUERY, {
+    variables: {handle: 'grass-roots-meat'},
+  });
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
+
+  const recommendedProducts = await storefront.query(PRODUCT_RECOMMENDATION, {
+    variables: {productId: product?.id},
+  });
 
   const firstVariant = product.variants.nodes[0];
   const firstVariantIsDefault = Boolean(
@@ -63,7 +77,7 @@ export async function loader({params, request, context}) {
     variables: {handle},
   });
 
-  return defer({product, variants});
+  return defer({product, variants, blogs, recommendedProducts});
 }
 
 /**
@@ -91,37 +105,157 @@ function redirectToFirstVariant({product, request}) {
 
 export default function Product() {
   /** @type {LoaderReturnData} */
-  const {product, variants} = useLoaderData();
+  const {product, variants, blogs, recommendedProducts} = useLoaderData();
   const {selectedVariant} = product;
+  const [quantities, setQuantities] = useState([1]);
+
+  useEffect(() => {
+    variants &&
+      setQuantities(
+        new Array(variants?.product?.variants?.nodes.length).fill(1),
+      );
+  }, [variants]);
+
+  const incrementQuantity = (index) => {
+    setQuantities((prevQuantities) => {
+      const newQuantities = [...prevQuantities];
+      newQuantities[index] += 1;
+      return newQuantities;
+    });
+  };
+
+  const decrementQuantity = (index) => {
+    setQuantities((prevQuantities) => {
+      const newQuantities = [...prevQuantities];
+      newQuantities[index] = Math.max(1, newQuantities[index] - 1);
+      return newQuantities;
+    });
+  };
+
+  const handleQuantityChange = (index, value) => {
+    setQuantities((prevQuantities) => {
+      const newQuantities = [...prevQuantities];
+      newQuantities[index] = value > 0 ? value : 1;
+      return newQuantities;
+    });
+  };
+
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <ProductMain
-        selectedVariant={selectedVariant}
-        product={product}
-        variants={variants}
-      />
-    </div>
+    <>
+      <div className="product">
+        <ProductImage
+          image={selectedVariant?.image}
+          selectedVariant={selectedVariant}
+        />
+        <ProductMain
+          selectedVariant={selectedVariant}
+          product={product}
+          variants={variants}
+          quantities={quantities}
+          incrementQuantity={incrementQuantity}
+          decrementQuantity={decrementQuantity}
+          handleQuantityChange={handleQuantityChange}
+        />
+      </div>
+      <GrasssRootMeets blogs={blogs} isItWorkAvailable={true} />
+      <div>
+        <BestSellerReusable
+          bestSellerCollection={recommendedProducts}
+          title={'You may also like'}
+        />
+      </div>
+    </>
   );
 }
 
 /**
  * @param {{image: ProductVariantFragment['image']}}
  */
-function ProductImage({image}) {
+function ProductImage({image, selectedVariant}) {
   if (!image) {
     return <div className="product-image" />;
   }
+
+  if (!selectedVariant?.product.media) return null;
+
+  const video = selectedVariant?.product.media.nodes[1]?.sources;
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const items = [
+    {
+      type: 'image',
+      component: (
+        <Image
+          alt={image.altText || 'Product Image'}
+          aspectRatio="1/1"
+          data={image}
+          key={image.id}
+          sizes="(min-width: 15em) 50vw, 100vw"
+          className="product-img"
+        />
+      ),
+    },
+    video && {
+      type: 'video',
+      component: <Video data={{sources: video}} className="product-video" />,
+    },
+  ].filter(Boolean);
+
+  const nextSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === items.length - 1 ? 0 : prevIndex + 1,
+    );
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? items.length - 1 : prevIndex - 1,
+    );
+  };
+
   return (
-    <div className="product-image">
-      <Image
-        alt={image.altText || 'Product Image'}
-        aspectRatio="1/1"
-        data={image}
-        key={image.id}
-        sizes="(min-width: 45em) 50vw, 100vw"
-      />
-    </div>
+    <>
+      {video ? (
+        <div className="product-carousel">
+          {items.map((item, index) => (
+            <div
+              key={item.id}
+              className={`product-card ${
+                index === currentIndex ? 'active-slide' : ''
+              }`}
+            >
+              {item.component}
+            </div>
+          ))}
+
+          <img
+            onClick={prevSlide}
+            src={PrevIcon}
+            height={25}
+            width={25}
+            className="product-carousel-btn prev-btn"
+          />
+          <img
+            onClick={nextSlide}
+            src={NextIcon}
+            height={25}
+            width={25}
+            className="product-carousel-btn next-btn"
+          />
+        </div>
+      ) : (
+        <div className="product-image">
+          {video && <Video data={{sources: video}} className="product-video" />}
+          <Image
+            alt={image.altText || 'Product Image'}
+            aspectRatio="1/1"
+            data={image}
+            key={image.id}
+            sizes="(min-width: 15em) 50vw, 100vw"
+          />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -132,11 +266,20 @@ function ProductImage({image}) {
  *   variants: Promise<ProductVariantsQuery>;
  * }}
  */
-function ProductMain({selectedVariant, product, variants}) {
+function ProductMain({
+  selectedVariant,
+  product,
+  variants,
+  quantities,
+  incrementQuantity,
+  decrementQuantity,
+  handleQuantityChange,
+}) {
   const {title, descriptionHtml} = product;
+
   return (
     <div className="product-main">
-      <h1>{title}</h1>
+      <h1 style={{color: '#607556'}}>{title}</h1>
       <ProductPrice selectedVariant={selectedVariant} />
       <br />
       <Suspense
@@ -145,6 +288,10 @@ function ProductMain({selectedVariant, product, variants}) {
             product={product}
             selectedVariant={selectedVariant}
             variants={[]}
+            quantities={quantities}
+            incrementQuantity={incrementQuantity}
+            decrementQuantity={decrementQuantity}
+            handleQuantityChange={handleQuantityChange}
           />
         }
       >
@@ -157,6 +304,10 @@ function ProductMain({selectedVariant, product, variants}) {
               product={product}
               selectedVariant={selectedVariant}
               variants={data.product?.variants.nodes || []}
+              quantities={quantities}
+              incrementQuantity={incrementQuantity}
+              decrementQuantity={decrementQuantity}
+              handleQuantityChange={handleQuantityChange}
             />
           )}
         </Await>
@@ -206,7 +357,15 @@ function ProductPrice({selectedVariant}) {
  *   variants: Array<ProductVariantFragment>;
  * }}
  */
-function ProductForm({product, selectedVariant, variants}) {
+function ProductForm({
+  product,
+  selectedVariant,
+  variants,
+  quantities,
+  incrementQuantity,
+  decrementQuantity,
+  handleQuantityChange,
+}) {
   return (
     <div className="product-form">
       <VariantSelector
@@ -217,24 +376,60 @@ function ProductForm({product, selectedVariant, variants}) {
         {({option}) => <ProductOptions key={option.name} option={option} />}
       </VariantSelector>
       <br />
-      <AddToCartButton
-        disabled={!selectedVariant || !selectedVariant.availableForSale}
-        onClick={() => {
-          window.location.href = window.location.href + '#cart-aside';
-        }}
-        lines={
-          selectedVariant
-            ? [
-                {
-                  merchandiseId: selectedVariant.id,
-                  quantity: 1,
-                },
-              ]
-            : []
-        }
-      >
-        {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
-      </AddToCartButton>
+      {/* <div className="add-to-cart-section"> */}
+      <div className="product-quantity-controls-section">
+        <div className="product-quantity-controls">
+          <button
+            className="product-quantity-btn"
+            onClick={() => decrementQuantity(0)}
+          >
+            -
+          </button>
+          <input
+            type="text"
+            className="product-quantity-input"
+            value={quantities[0]}
+            onChange={(e) =>
+              handleQuantityChange(0, parseInt(e.target.value, 10))
+            }
+          />
+          <button
+            className="product-quantity-btn"
+            onClick={() => incrementQuantity(0)}
+          >
+            +
+          </button>
+        </div>
+        <div className="product-add-to-cart-section">
+          <AddToCartButton
+            className={'product-add-to-cart-section1'}
+            disabled={!selectedVariant || !selectedVariant.availableForSale}
+            onClick={() => {
+              window.location.href =
+                window.location.href +
+                `${
+                  window.location.href.includes('#')
+                    ? 'cart-aside'
+                    : '#cart-aside'
+                }`;
+            }}
+            lines={
+              selectedVariant
+                ? [
+                    {
+                      merchandiseId: selectedVariant.id,
+                      quantity: quantities[0],
+                    },
+                  ]
+                : []
+            }
+            quantity={quantities[0]}
+          >
+            {selectedVariant?.availableForSale ? 'Add to cart' : 'Sold out'}
+          </AddToCartButton>
+        </div>
+      </div>
+      {/* </div> */}
     </div>
   );
 }
@@ -280,24 +475,34 @@ function ProductOptions({option}) {
  *   onClick?: () => void;
  * }}
  */
-function AddToCartButton({analytics, children, disabled, lines, onClick}) {
+function AddToCartButton({
+  analytics,
+  children,
+  disabled,
+  lines,
+  onClick,
+  quantity,
+  className,
+}) {
   return (
     <CartForm route="/cart" inputs={{lines}} action={CartForm.ACTIONS.LinesAdd}>
       {(fetcher) => (
-        <>
+        <div className={className}>
           <input
             name="analytics"
             type="hidden"
             value={JSON.stringify(analytics)}
           />
+          <input name="quantity" type="hidden" value={quantity} />
           <button
             type="submit"
+            className="product-add-to-cart-btn"
             onClick={onClick}
             disabled={disabled ?? fetcher.state !== 'idle'}
           >
             {children}
           </button>
-        </>
+        </div>
       )}
     </CartForm>
   );
@@ -326,6 +531,17 @@ const PRODUCT_VARIANT_FRAGMENT = `#graphql
     product {
       title
       handle
+      media(first: 10) {
+      nodes {
+        ... on Video {
+          sources {
+            url
+            mimeType
+            format
+          }
+        }
+      }
+    }
     }
     selectedOptions {
       name

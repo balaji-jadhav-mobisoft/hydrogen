@@ -8,11 +8,18 @@ import {
   PredictiveSearchForm,
   PredictiveSearchResults,
 } from '~/components/Search';
-
+import ReviewsCarousel from './common/ReviewCarousal';
 /**
  * @param {LayoutProps}
  */
-export function Layout({cart, children = null, footer, header, isLoggedIn}) {
+export function Layout({
+  cart,
+  children = null,
+  footer,
+  header,
+  isLoggedIn,
+  reviews,
+}) {
   return (
     <>
       <CartAside cart={cart} />
@@ -20,6 +27,7 @@ export function Layout({cart, children = null, footer, header, isLoggedIn}) {
       <MobileMenuAside menu={header?.menu} shop={header?.shop} />
       {header && <Header header={header} cart={cart} isLoggedIn={isLoggedIn} />}
       <main>{children}</main>
+      <ReviewsCarousel reviews={reviews} />
       <Suspense>
         <Await resolve={footer}>
           {(footer) => <Footer menu={footer?.menu} shop={header?.shop} />}

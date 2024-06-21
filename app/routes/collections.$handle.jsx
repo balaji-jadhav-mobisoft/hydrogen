@@ -1,20 +1,12 @@
-import {json, redirect} from '@shopify/remix-oxygen';
-import {useLoaderData, Link} from '@remix-run/react';
-import {
-  Pagination,
-  getPaginationVariables,
-  Image,
-  Money,
-} from '@shopify/hydrogen';
-import {useVariantUrl} from '~/lib/variants';
+import {useLoaderData, Link, useFetcher, useNavigate} from '@remix-run/react';
+import {Image, Money} from '@shopify/hydrogen';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import Breadcrumb from '~/components/common/Breadcrumb';
-
-/**
- * @type {MetaFunction<typeof loader>}
- */
-export const meta = ({data}) => {
-  return [{title: `Hydrogen | ${data?.collection.title ?? ''} Collection`}];
-};
+import CollectionHandleProducts from '~/components/collection-handle-products/CollectionHandleProducts';
+import LoaderIcon from '~/assets/loader.gif';
+import NewRecipesBlog from '~/components/home-page/NewRecipesBlog';
+import {json, redirect} from '@shopify/remix-oxygen';
+import {getPaginationVariables} from '@shopify/hydrogen';
 
 /**
  * @param {LoaderFunctionArgs}
@@ -22,6 +14,13 @@ export const meta = ({data}) => {
 export async function loader({request, params, context}) {
   const {handle} = params;
   const {storefront} = context;
+
+  const url = new URL(request.url);
+  const sort_by = url.searchParams.get('sort_by');
+  const reverse = getReverseFromQuery(sort_by);
+
+  const sortKey = getSortKeyFromQuery(sort_by);
+
   const paginationVariables = getPaginationVariables(request, {
     pageBy: 8,
   });
@@ -31,7 +30,16 @@ export async function loader({request, params, context}) {
   }
 
   const {collection} = await storefront.query(COLLECTION_QUERY, {
-    variables: {handle, ...paginationVariables},
+    variables: {
+      handle,
+      ...paginationVariables,
+      sortKey: sortKey,
+      reverse: reverse,
+    },
+  });
+
+  const newRecipesBlog = await storefront.query(BLOGS_QUERY, {
+    variables: {handle: 'our-newest-recipes'},
   });
 
   if (!collection) {
@@ -39,103 +47,206 @@ export async function loader({request, params, context}) {
       status: 404,
     });
   }
-  return json({collection});
+
+  return json({collection, newRecipesBlog});
 }
 
+function getSortKeyFromQuery(sort_by) {
+  switch (sort_by) {
+    case 'DATE_NEW_TO_OLD':
+      return 'CREATED';
+    case 'DATE_OLD_TO_NEW':
+      return 'CREATED';
+    case 'PRICE_HIGH_TO_LOW':
+      return 'PRICE';
+    case 'PRICE_LOW_TO_HIGH':
+      return 'PRICE';
+    default:
+      return 'BEST_SELLING';
+  }
+}
+
+function getReverseFromQuery(sort_by) {
+  switch (sort_by) {
+    case 'DATE_NEW_TO_OLD':
+    case 'PRICE_LOW_TO_HIGH':
+      return false;
+    case 'DATE_OLD_TO_NEW':
+    case 'PRICE_HIGH_TO_LOW':
+      return true;
+    default:
+      return false;
+  }
+}
 export default function Collection() {
-  /** @type {LoaderReturnData} */
-  const {collection} = useLoaderData();
+  const {collection, newRecipesBlog} = useLoaderData();
+  const [products, setProducts] = useState(collection.products.nodes);
+  const [pageInfo, setPageInfo] = useState(collection.products.pageInfo);
+  const [loading, setLoading] = useState(false);
+  const fetcher = useFetcher();
+  const loadMoreRef = useRef(null);
+  const [sortBy, setSortBy] = useState('BEST_SELLING');
+  const [sortDirection, setSortDirection] = useState('DESC');
+  const [reverse, setReverse] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleSortChange = (e) => {
+    const newSortBy = e.target.value;
+    setSortBy(newSortBy);
+    let newReverse = false;
+
+    if (newSortBy === 'PRICE_LOW_TO_HIGH' || newSortBy === 'DATE_NEW_TO_OLD') {
+      newReverse = false;
+    } else if (
+      newSortBy === 'PRICE_HIGH_TO_LOW' ||
+      newSortBy === 'DATE_OLD_TO_NEW'
+    ) {
+      newReverse = true;
+    }
+
+    setReverse(newReverse);
+    navigate(
+      `/collections/${collection.handle}?sort_by=${newSortBy}&reverse=${newReverse}`,
+    );
+  };
+
+  // const loadMoreProducts = () => {
+  //   if (!pageInfo.hasNextPage || loading || fetcher.state !== 'idle') return;
+
+  //   setLoading(true);
+  //   fetcher.load(
+  //     `/collections/${collection.handle}/pagination?cursor=${pageInfo.endCursor}`,
+  //   );
+  // };
+  // Function to load more products based on pagination
+  const loadMoreProducts = () => {
+    if (!pageInfo.hasNextPage || loading || fetcher.state !== 'idle') return;
+
+    setLoading(true);
+
+    const url = `/collections/${collection.handle}/pagination?cursor=${pageInfo.endCursor}&sort_by=${sortBy}&reverse=${reverse}`;
+
+    fetcher.load(url, {
+      method: 'GET',
+    });
+  };
+
+  // Update products state when fetcher data changes
+  useEffect(() => {
+    if (fetcher.data) {
+      setTimeout(() => {
+        const newProducts = fetcher.data.collection.products.nodes.filter(
+          (newProduct) =>
+            !products.some(
+              (existingProduct) => existingProduct.id === newProduct.id,
+            ),
+        );
+        setProducts((prev) => [...prev, ...newProducts]);
+        setPageInfo(fetcher.data.collection.products.pageInfo);
+        setLoading(false);
+      }, 2000); // 2-second delay (optional)
+    }
+  }, [fetcher.data]);
+
+  // Intersection Observer to load more products when scrolled to the bottom
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMoreProducts();
+        }
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 1.0,
+      },
+    );
+
+    const target = loadMoreRef.current;
+    if (target) {
+      observer.observe(target);
+    }
+
+    return () => {
+      if (target) {
+        observer.unobserve(target);
+      }
+    };
+  }, [loadMoreRef, pageInfo, fetcher.state, loading]);
+
   const breadcrumbItems = [
     {title: 'Home', path: '/'},
     {title: 'Collections', path: '/collections'},
     {title: collection.title, path: `/collections/${collection.handle}`},
   ];
-  console.log(collection, 'collection==');
+
+  useEffect(() => {
+    setProducts(collection.products.nodes);
+  }, [collection.products.nodes]);
+
+  const image = collection?.image;
+
   return (
     <div className="collection">
-      <h1>{collection.title}</h1>
+      <div className="collection-image-section">
+        {image && (
+          <div className="collection-detail-image">
+            <Image
+              aria-label="Collection Image"
+              data={image}
+              src={image.url}
+              sizes="100vw"
+            />
+          </div>
+        )}
+        <h1 className="collection-details-title">{collection.title}</h1>
+      </div>
       <main
         dangerouslySetInnerHTML={{__html: collection.descriptionHtml}}
-        className="collection-description"
-      >
-        {/* {collection.description} */}
-      </main>
+        className="collection-details-description"
+      ></main>
       <Breadcrumb items={breadcrumbItems} />
-      <Pagination connection={collection.products}>
-        {({nodes, isLoading, PreviousLink, NextLink}) => (
-          <>
-            <>{console.log(nodes, 'node')}</>
-            <PreviousLink>
-              {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
-            </PreviousLink>
-            <ProductsGrid products={nodes} />
-            <br />
-            <NextLink>
-              {isLoading ? 'Loading...' : <span>Load more ↓</span>}
-            </NextLink>
-          </>
-        )}
-      </Pagination>
+      {/* <div className="sorting-controls">
+        <label>Sort By:</label>
+        <select value={sortBy} onChange={handleSortChange}>
+          <option value="BEST_SELLING">Best Selling</option>
+          <option value="PRICE_LOW_TO_HIGH">Price, low to high</option>
+          <option value="PRICE_HIGH_TO_LOW">Price, high to low</option>
+          <option value="DATE_NEW_TO_OLD">Date, new to old</option>
+          <option value="DATE_OLD_TO_NEW">Date, old to new</option>
+        </select>
+        <button
+          onClick={() =>
+            setSortDirection(sortDirection === 'ASC' ? 'DESC' : 'ASC')
+          }
+        >
+          {sortDirection === 'ASC' ? '▲' : '▼'}
+        </button>
+      </div> */}
+      <ProductsGrid products={products} />
+      {loading && (
+        <div className="loader">
+          <img src={LoaderIcon} alt="Loading..." />
+        </div>
+      )}
+      <div ref={loadMoreRef} style={{height: '20px'}}></div>
+      <div>
+        <NewRecipesBlog
+          newRecipesBlog={newRecipesBlog}
+          showReadMoreButton={false}
+        />
+      </div>
     </div>
   );
 }
 
-/**
- * @param {{products: ProductItemFragment[]}}
- */
 function ProductsGrid({products}) {
   return (
     <div className="products-grid">
-      {products.map((product, index) => {
-        return (
-          <ProductItem
-            key={product.id}
-            product={product}
-            loading={index < 8 ? 'eager' : undefined}
-          />
-        );
-      })}
+      <CollectionHandleProducts products={products} />
     </div>
-  );
-}
-
-/**
- * @param {{
- *   product: ProductItemFragment;
- *   loading?: 'eager' | 'lazy';
- * }}
- */
-function ProductItem({product, loading}) {
-  const {collection} = useLoaderData();
-  console.log(collection, 'ssss');
-  const variant = product.variants.nodes[0];
-  const variantUrl = useVariantUrl(
-    product.handle,
-    variant.selectedOptions,
-    collection.handle,
-  );
-  return (
-    <Link
-      className="product-item"
-      key={product.id}
-      // prefetch="intent"
-      // to={variantUrl}
-      to={`/collections/${collection.handle}/products/${product.handle}`}
-    >
-      {product.featuredImage && (
-        <Image
-          alt={product.featuredImage.altText || product.title}
-          aspectRatio="1/1"
-          data={product.featuredImage}
-          loading={loading}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h4>{product.title}</h4>
-      <small>
-        <Money data={product.priceRange.minVariantPrice} />
-      </small>
-    </Link>
   );
 }
 
@@ -163,8 +274,13 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
         ...MoneyProductItem
       }
     }
+    createdAt
     variants(first: 1) {
       nodes {
+        availableForSale
+        weight
+        weightUnit
+        id
         selectedOptions {
           name
           value
@@ -174,45 +290,59 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
   }
 `;
 
-// NOTE: https://shopify.dev/docs/api/storefront/2022-04/objects/collection
 const COLLECTION_QUERY = `#graphql
   ${PRODUCT_ITEM_FRAGMENT}
   query Collection(
     $handle: String!
-    $country: CountryCode
-    $language: LanguageCode
     $first: Int
-    $last: Int
-    $startCursor: String
-    $endCursor: String
-  ) @inContext(country: $country, language: $language) {
+    $after: String
+    $sortKey: ProductCollectionSortKeys
+    $reverse: Boolean
+  ) {
     collection(handle: $handle) {
       id
       handle
       title
       description
       descriptionHtml
-      products(
-        first: $first,
-        last: $last,
-        before: $startCursor,
-        after: $endCursor
-      ) {
+      image {
+        url
+      }
+      products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse) {
         nodes {
           ...ProductItem
         }
         pageInfo {
-          hasPreviousPage
           hasNextPage
           endCursor
-          startCursor
         }
       }
     }
   }
 `;
 
-/** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
-/** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */
-/** @typedef {import('storefrontapi.generated').ProductItemFragment} ProductItemFragment */
-/** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */
+const BLOGS_QUERY = `#graphql
+  query Blogs(
+    $language: LanguageCode
+    $handle: String!
+  ) @inContext(language: $language) {
+    blog(handle: $handle) {
+      title
+      handle
+      articles(first: 10) {
+        edges {
+          node {
+            id
+            contentHtml
+            title
+            handle
+            image {
+              height
+              url
+            }
+          }
+        }
+      }
+    }
+  }
+`;

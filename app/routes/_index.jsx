@@ -77,7 +77,6 @@ export async function loader({context}) {
 export default function Homepage() {
   /** @type {LoaderReturnData} */
   const data = useLoaderData();
-  console.log('Home page data ======>', data);
   return (
     <div className="home">
       {/* <FeaturedCollection collection={data.featuredCollection} /> */}
@@ -91,7 +90,10 @@ export default function Homepage() {
       />
       <SeeOnSection />
       <CoOpBlog coOpBlog={data.coOpBlog} />
-      <NewRecipesBlog newRecipesBlog={data.newRecipesBlog} />
+      <NewRecipesBlog
+        newRecipesBlog={data.newRecipesBlog}
+        showReadMoreButton={true}
+      />
       {/* <RecommendedProducts products={data.recommendedProducts} /> */}
     </div>
   );
@@ -334,7 +336,7 @@ const ALL_COLLECTIONS_QUERY = `#graphql
   }
 `;
 
-const BLOGS_QUERY = `#graphql
+export const BLOGS_QUERY = `#graphql
   query Blogs(
     $language: LanguageCode
     $handle: String!

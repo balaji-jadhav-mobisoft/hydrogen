@@ -30,6 +30,9 @@ declare global {
     PUBLIC_STOREFRONT_ID: string;
     PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID: string;
     PUBLIC_CUSTOMER_ACCOUNT_API_URL: string;
+    JUDGEME_PUBLIC_TOKEN: string;
+    JUDGEME_PRIVATE_TOKEN: string;
+    JUDGEME_CDN_HOST: string;
   }
 }
 

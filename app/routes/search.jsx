@@ -56,8 +56,6 @@ export async function loader({request, context}) {
 export default function SearchPage() {
   /** @type {LoaderReturnData} */
   const {searchTerm, searchResults} = useLoaderData();
-  console.log(searchTerm, 'searchTer=====');
-  console.log(searchResults, 'searchResults=====');
 
   return (
     <div className="search">

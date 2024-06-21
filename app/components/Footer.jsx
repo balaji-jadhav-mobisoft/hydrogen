@@ -74,7 +74,6 @@ function FooterMenu({menu, primaryDomainUrl}) {
               </h5>
               {item?.items.map((nestedItems) => {
                 if (!nestedItems.url) return null;
-                console.log(nestedItems, 'items====>');
                 // if the url is internal, we strip the domain
                 const nestedUrl =
                   nestedItems.url.includes('myshopify.com') ||

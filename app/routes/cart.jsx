@@ -61,7 +61,7 @@ export async function action({request, context}) {
       throw new Error(`${action} cart action is not defined`);
   }
 
-  const cartId = result.cart.id;
+  const cartId = result.cart?.id;
   const headers = cart.setCartId(result.cart.id);
   const {cart: cartResult, errors} = result;
 

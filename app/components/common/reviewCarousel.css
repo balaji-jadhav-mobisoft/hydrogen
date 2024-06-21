@@ -1,0 +1,52 @@
+.reviews-carousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin: 0 auto;
+  background-color: #f8f4f0;
+}
+
+.review-card {
+  text-align: center;
+  display: none;
+  padding: 50px 90px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-card.active-slide {
+  display: block;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  /* background-color: #007bff; */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.review-rating {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.star {
+  font-size: 24px;
+  color: #e4e5e9; /* Gray color for empty stars */
+}
+
+.star.filled {
+  color: #ffd700; /* Gold color for filled stars */
+}
+.carousel-btn.prev-btn {
+  left: 20px;
+}
+
+.carousel-btn.next-btn {
+  right: 20px;
+}
