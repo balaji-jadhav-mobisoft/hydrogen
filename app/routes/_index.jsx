@@ -12,8 +12,6 @@ import CoOpBlog from '~/components/home-page/CoOpBlog';
 import ChefSpecialCollection from '~/components/home-page/ChefSpecialCollection';
 import SeeOnSection from '~/components/home-page/SeeOnSection';
 import NewRecipesBlog from '~/components/home-page/NewRecipesBlog';
-import GoGreen from '~/assets/go-green.jpg';
-import Forb from '~/assets/forbes-logo.webp';
 
 /**
  * @type {MetaFunction}
@@ -83,43 +81,6 @@ export default function Homepage() {
     <div className="home">
       {/* <FeaturedCollection collection={data.featuredCollection} /> */}
       <BackInStockCollection collection={data.collection} />
-      <div id="carouselExample" className="carousel slide">
-        <div className="carousel-inner">
-          <div className="carousel-item active">
-            <img src={GoGreen} className="d-block w-100" alt="..." />
-          </div>
-          <div className="carousel-item">
-            <img src={Forb} className="d-block w-100" alt="..." />
-          </div>
-          <div className="carousel-item">
-            <img src={GoGreen} className="d-block w-100" alt="..." />
-          </div>
-        </div>
-        <button
-          className="carousel-control-prev"
-          type="button"
-          data-bs-target="#carouselExample"
-          data-bs-slide="prev"
-        >
-          <span
-            className="carousel-control-prev-icon"
-            aria-hidden="true"
-          ></span>
-          <span className="visually-hidden">Previous</span>
-        </button>
-        <button
-          className="carousel-control-next"
-          type="button"
-          data-bs-target="#carouselExample"
-          data-bs-slide="next"
-        >
-          <span
-            className="carousel-control-next-icon"
-            aria-hidden="true"
-          ></span>
-          <span className="visually-hidden">Next</span>
-        </button>
-      </div>
       <ShopSelectCuts allCollections={data.allCollections} />
       <GrasssRootMeets blogs={data.blogs} />
       <BestSellerCollection bestSellerCollection={data.bestSellerCollection} />
