@@ -34,7 +34,6 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
         }
       }
     }
-    
   }
 `;
 
@@ -76,12 +75,10 @@ export async function loader({request, params, context}) {
     handle,
     first: 8,
     after: cursor,
-    sortKey: sortKey,
-    reverse: reverse,
   };
 
   const {collection} = await storefront.query(COLLECTION_QUERY, {
-    variables: paginationVariables,
+    variables: {...paginationVariables, sortKey: sortKey, reverse: reverse},
   });
 
   if (!collection) {

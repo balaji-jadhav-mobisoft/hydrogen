@@ -86,7 +86,6 @@ export default function Collection() {
   const fetcher = useFetcher();
   const loadMoreRef = useRef(null);
   const [sortBy, setSortBy] = useState('BEST_SELLING');
-  const [sortDirection, setSortDirection] = useState('DESC');
   const [reverse, setReverse] = useState(false);
 
   const navigate = useNavigate();
@@ -111,14 +110,6 @@ export default function Collection() {
     );
   };
 
-  // const loadMoreProducts = () => {
-  //   if (!pageInfo.hasNextPage || loading || fetcher.state !== 'idle') return;
-
-  //   setLoading(true);
-  //   fetcher.load(
-  //     `/collections/${collection.handle}/pagination?cursor=${pageInfo.endCursor}`,
-  //   );
-  // };
   // Function to load more products based on pagination
   const loadMoreProducts = () => {
     if (!pageInfo.hasNextPage || loading || fetcher.state !== 'idle') return;
@@ -207,24 +198,18 @@ export default function Collection() {
         dangerouslySetInnerHTML={{__html: collection.descriptionHtml}}
         className="collection-details-description"
       ></main>
-      <Breadcrumb items={breadcrumbItems} />
-      {/* <div className="sorting-controls">
-        <label>Sort By:</label>
-        <select value={sortBy} onChange={handleSortChange}>
-          <option value="BEST_SELLING">Best Selling</option>
-          <option value="PRICE_LOW_TO_HIGH">Price, low to high</option>
-          <option value="PRICE_HIGH_TO_LOW">Price, high to low</option>
-          <option value="DATE_NEW_TO_OLD">Date, new to old</option>
-          <option value="DATE_OLD_TO_NEW">Date, old to new</option>
-        </select>
-        <button
-          onClick={() =>
-            setSortDirection(sortDirection === 'ASC' ? 'DESC' : 'ASC')
-          }
-        >
-          {sortDirection === 'ASC' ? '▲' : '▼'}
-        </button>
-      </div> */}
+      <div style={{display: 'flex', justifyContent: 'space-between'}}>
+        <Breadcrumb items={breadcrumbItems} />
+        <div className="sorting-controls">
+          <select value={sortBy} onChange={handleSortChange}>
+            <option value="BEST_SELLING">Best Selling</option>
+            <option value="PRICE_LOW_TO_HIGH">Price, low to high</option>
+            <option value="PRICE_HIGH_TO_LOW">Price, high to low</option>
+            <option value="DATE_NEW_TO_OLD">Date, new to old</option>
+            <option value="DATE_OLD_TO_NEW">Date, old to new</option>
+          </select>
+        </div>
+      </div>
       <ProductsGrid products={products} />
       {loading && (
         <div className="loader">

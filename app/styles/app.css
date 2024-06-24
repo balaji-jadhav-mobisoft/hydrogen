@@ -756,8 +756,20 @@ aside li {
   font-size: 16px;
 }
 
+select {
+  padding: 10px;
+  outline: none;
+}
+
 .product-quantity-btn:hover {
   background-color: #f2f2f2;
+}
+
+.sorting-controls {
+  margin-right: 40px;
+  @media (max-width: 48em) {
+    margin-right: 21px;
+  }
 }
 
 .product-quantity-input {

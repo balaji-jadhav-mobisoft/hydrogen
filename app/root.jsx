@@ -14,8 +14,9 @@ import favicon from './assets/favicon.svg';
 import resetStyles from './styles/reset.css?url';
 import appStyles from './styles/app.css?url';
 import headerStyles from '~/components/header.css?url';
+// import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import {Layout} from '~/components/Layout';
-
+import bootstrapStyles from 'bootstrap/dist/css/bootstrap.min.css';
 /**
  * This is important to avoid re-fetching root queries on sub-navigations
  * @type {ShouldRevalidateFunction}
@@ -39,7 +40,7 @@ export function links() {
     {rel: 'stylesheet', href: resetStyles},
     {rel: 'stylesheet', href: appStyles},
     {rel: 'stylesheet2', href: headerStyles},
-    // {rel: 'stylesheet3', href: backInCollectionStyle},
+    // {rel: 'stylesheet3', href: bootstrapStyles},
     {
       rel: 'preconnect',
       href: 'https://cdn.shopify.com',
@@ -122,6 +123,11 @@ export default function App() {
 
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+          crossorigin="anonymous"
+        ></script>
       </body>
     </html>
   );

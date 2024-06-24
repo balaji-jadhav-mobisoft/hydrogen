@@ -76,7 +76,7 @@ const CollectionHandleProducts = ({products, loading}) => {
           const sizeOption = val?.options?.find(
             (option) => option.name === 'Size',
           )?.values[0];
-          const price = val?.priceRange?.maxVariantPrice?.amount;
+          const price = val?.priceRange?.minVariantPrice?.amount;
           const selectedVariant = val?.variants?.nodes[0];
           const quantity = quantities[index];
 

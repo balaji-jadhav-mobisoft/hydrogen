@@ -15,13 +15,31 @@ export default async function handleRequest(
   responseHeaders,
   remixContext,
 ) {
-  // createContentSecurityPolicy({
-  //   connectSrc: [
-  //     // (ie. 'wss://<your-ngrok-domain>.app:*')
-  //     'wss://https://hydrogen-test-app1-55c24494d459efd622b8.o2.myshopify.dev/:*',
-  //   ],
-  // });
+  // Generate the nonce first
   const {nonce, header, NonceProvider} = createContentSecurityPolicy();
+
+  // Update the Content Security Policy directives to include the nonce
+  const cspHeader = {
+    ...header,
+    directives: {
+      ...header.directives,
+      defaultSrc: [
+        "'self'",
+        `'nonce-${nonce}'`,
+        'https://cdn.shopify.com',
+        'https://shopify.com',
+        'http://localhost:*',
+      ],
+      scriptSrc: [
+        "'self'",
+        `'nonce-${nonce}'`,
+        'https://cdn.shopify.com',
+        'https://shopify.com',
+        'http://localhost:*',
+        'https://cdn.jsdelivr.net',
+      ],
+    },
+  };
 
   const body = await renderToReadableStream(
     <NonceProvider>
@@ -31,7 +49,6 @@ export default async function handleRequest(
       nonce,
       signal: request.signal,
       onError(error) {
-        // eslint-disable-next-line no-console
         console.error(error);
         responseStatusCode = 500;
       },
@@ -43,7 +60,7 @@ export default async function handleRequest(
   }
 
   responseHeaders.set('Content-Type', 'text/html');
-  responseHeaders.set('Content-Security-Policy', header);
+  responseHeaders.set('Content-Security-Policy', cspHeader);
 
   return new Response(body, {
     headers: responseHeaders,
